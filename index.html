@@ -344,6 +344,32 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 }
 .empty-ico { font-size: 36px; margin-bottom: 10px; }
 
+/* ─── PARCELAS ─── */
+.item-parcelas {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 5px; flex-wrap: wrap;
+}
+.parc-inp-wrap {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 8px; transition: border-color .15s;
+}
+.parc-inp-wrap:focus-within { border-color: var(--gold); }
+.parc-inp-wrap span { font-size: 9px; color: var(--text3); white-space: nowrap; }
+.parc-inp {
+  background: transparent; border: none; outline: none;
+  color: var(--gold); font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 800; width: 36px; text-align: center;
+  -webkit-appearance: none;
+}
+.parc-inp::-webkit-inner-spin-button, .parc-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+.parc-eta {
+  font-size: 10px; color: var(--text3);
+  background: var(--bg3); border-radius: 5px;
+  padding: 3px 8px; white-space: nowrap;
+}
+.parc-eta.done { color: var(--green); background: var(--green-d); }
+
 /* ─── ALOCAÇÃO ─── */
 .alloc-row {
   background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r);
@@ -812,13 +838,19 @@ function loadLS() {
 
 // ━━━━━━━━━━━━━━━━━━ ADD / UPDATE / REMOVE ━━━━━━━━━━━━━━━━━━
 function addItem(tipo) {
-  S[tipo].push({ id:nid(), name:'', value:0, tag:tipo==='receitas'?'fixo':'variavel', color:gc(S[tipo]) });
+  S[tipo].push({ id:nid(), name:'', value:0, tag:tipo==='receitas'?'fixo':'variavel', color:gc(S[tipo]), parcTotal:0, parcRestantes:0 });
   renderList(tipo);
   setTimeout(()=>{ const ins=document.querySelectorAll(`#lst-${tipo} .item-name`); if(ins.length) ins[ins.length-1].focus(); },80);
 }
 
 function removeItem(tipo,id) { S[tipo]=S[tipo].filter(i=>i.id!==id); renderList(tipo); calcular(); }
-function updItem(tipo,id,f,v) { const i=S[tipo].find(i=>i.id===id); if(i){ i[f]=f==='value'?(parseFloat(v)||0):v; calcular(); } }
+function updItem(tipo,id,f,v) {
+  const i=S[tipo].find(i=>i.id===id); if(!i) return;
+  const isNum = ['value','parcTotal','parcRestantes'].includes(f);
+  i[f] = f==='value' ? (parseFloat(v)||0) : isNum ? (parseInt(v)||0) : v;
+  if (f==='value'||f==='parcTotal'||f==='parcRestantes') { renderList(tipo); calcular(); }
+  else saveLS();
+}
 function cycleTag(tipo,id) {
   const i=S[tipo].find(i=>i.id===id); if(!i) return;
   const tags=tipo==='receitas'?['fixo','variavel','beneficio']:['fixo','variavel'];
@@ -831,7 +863,12 @@ function addAlloc() {
   setTimeout(()=>{ const ins=document.querySelectorAll('.alloc-name'); if(ins.length) ins[ins.length-1].focus(); },80);
 }
 function removeAlloc(id) { S.alocacao=S.alocacao.filter(a=>a.id!==id); renderAlloc(); calcular(); }
-function updAlloc(id,f,v) { const a=S.alocacao.find(a=>a.id===id); if(a){ a[f]=f==='value'?(parseFloat(v)||0):v; calcular(); } }
+function updAlloc(id,f,v) {
+  const a=S.alocacao.find(a=>a.id===id); if(!a) return;
+  a[f] = f==='value' ? (parseFloat(v)||0) : v;
+  if (f==='value') calcular();
+  else saveLS();
+}
 
 const EMOJIS=['🎯','💰','🌍','🚗','🏠','✈️','📚','💻','🏆','🛡️','🎓','💎'];
 function addGoal() {
@@ -840,9 +877,39 @@ function addGoal() {
   setTimeout(()=>{ const ins=document.querySelectorAll('.goal-name'); if(ins.length) ins[ins.length-1].focus(); },80);
 }
 function removeGoal(id) { S.metas=S.metas.filter(g=>g.id!==id); renderMetas(); }
-function updGoal(id,f,v) { const g=S.metas.find(g=>g.id===id); if(g){ g[f]=['meta','guardado','mensal'].includes(f)?(parseFloat(v)||0):v; renderMetas(); } }
+function updGoal(id,f,v) {
+  const g=S.metas.find(g=>g.id===id); if(!g) return;
+  const isNum = ['meta','guardado','mensal'].includes(f);
+  g[f] = isNum ? (parseFloat(v)||0) : v;
+  if (isNum) renderMetas(); // só re-renderiza pra campos numéricos (barra de progresso muda)
+  else saveLS(); // pra nome só salva, sem re-renderizar
+}
 
 // ━━━━━━━━━━━━━━━━━━ RENDER LISTS ━━━━━━━━━━━━━━━━━━
+function parcelasEta(item) {
+  if (!item.parcRestantes || !item.parcTotal) return '';
+  const meses = item.parcRestantes;
+  const d = new Date();
+  d.setMonth(d.getMonth() + meses);
+  const fim = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+  const progPct = item.parcTotal > 0 ? Math.round(((item.parcTotal - meses) / item.parcTotal) * 100) : 0;
+  const label = meses <= 0 ? '🎉 Quitado!' : `termina ${fim} · ${meses}x restantes`;
+  const cls = meses <= 0 ? 'done' : '';
+  return `
+    <div class="item-parcelas">
+      <div class="parc-inp-wrap" title="Parcelas restantes">
+        <span>restam</span>
+        <input class="parc-inp" type="number" inputmode="numeric" value="${item.parcRestantes||''}" placeholder="0"
+          oninput="updItem('despesas',${item.id},'parcRestantes',this.value)" min="0">
+        <span>de</span>
+        <input class="parc-inp" type="number" inputmode="numeric" value="${item.parcTotal||''}" placeholder="0"
+          oninput="updItem('despesas',${item.id},'parcTotal',this.value)" min="0">
+        <span>x</span>
+      </div>
+      <span class="parc-eta ${cls}">${label}</span>
+    </div>`;
+}
+
 function renderList(tipo) {
   const emptyHTML = `<div class="empty"><div class="empty-ico">${tipo==='receitas'?'💰':'💸'}</div>Nenhum item ainda.<br>Clique em "+ adicionar" ao lado.</div>`;
   const html = S[tipo].length ? S[tipo].map(item=>`
@@ -852,6 +919,7 @@ function renderList(tipo) {
         <input class="item-name" placeholder="Nome do item..." value="${item.name}"
           oninput="updItem('${tipo}',${item.id},'name',this.value)">
         <span class="item-tag ${item.tag}" onclick="cycleTag('${tipo}',${item.id})" title="Clique para mudar o tipo">${item.tag}</span>
+        ${tipo === 'despesas' ? parcelasEta(item) : ''}
       </div>
       <div class="item-right">
         <div class="val-wrap"><span>R$</span>
@@ -987,16 +1055,70 @@ function renderProj(R, D) {
   let acc = jaG, totalPoup = 0;
   const pb = document.getElementById('proj-body');
   if (!R) { pb.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Configure suas receitas para ver a projeção.</div>'; return; }
+
+  // Despesas parceladas com prazo definido
+  const parceladas = S.despesas.filter(d => d.parcRestantes > 0 && d.value > 0);
+
   pb.innerHTML = Array.from({length:meses},(_,i)=>{
     const rec = R * Math.pow(1+varP,i);
-    const poup = rec-D; acc+=poup; totalPoup+=poup;
-    return `<div class="proj-row">
-      <span class="proj-mo">${mname(i+1)}</span>
+    // Desconta despesas que já acabaram nesse mês
+    const despMes = S.despesas.reduce((sum, d) => {
+      if (d.parcRestantes > 0 && d.parcTotal > 0) {
+        return sum + (i < d.parcRestantes ? d.value : 0);
+      }
+      return sum + (d.value||0);
+    }, 0);
+    const poup = rec - despMes;
+    acc += poup;
+    totalPoup += poup;
+
+    // Marca meses em que parcelas terminam
+    const terminam = parceladas.filter(d => d.parcRestantes === i+1);
+    const ganho = terminam.reduce((s,d)=>s+d.value,0);
+    const badge = terminam.length ? `<span style="font-size:10px;color:var(--green);margin-left:4px">+${fmt(ganho)} livre</span>` : '';
+
+    return `<div class="proj-row" style="${acc<0?'background:var(--red-d)':''}">
+      <span class="proj-mo">${mname(i+1)}${badge}</span>
       <span class="proj-v">${fmts(rec)}</span>
       <span class="proj-s" style="color:${poup>=0?'var(--green)':'var(--red)'}">${poup>=0?'+':''}${fmts(poup)}</span>
       <span class="proj-a" style="color:${acc>=0?'var(--text)':'var(--red)'}">${fmts(acc)}</span>
     </div>`;
   }).join('');
+
+  // Seção de parcelas em andamento
+  if (parceladas.length > 0) {
+    const parcelasHTML = parceladas.map(d => {
+      const mFim = d.parcRestantes;
+      const fim = new Date(); fim.setMonth(fim.getMonth() + mFim);
+      const fimStr = fim.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+      const pct = d.parcTotal > 0 ? Math.round(((d.parcTotal - mFim) / d.parcTotal) * 100) : 0;
+      return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">${d.name||'Despesa'}</span>
+          <span style="font-size:12px;color:var(--red);font-weight:800">${fmt(d.value)}/mês</span>
+        </div>
+        <div style="height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:6px">
+          <div style="height:100%;width:${pct}%;background:var(--gold);border-radius:99px;transition:width .5s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+          <span>${mFim}x restantes de ${d.parcTotal}x · ${pct}% pago</span>
+          <span>termina <strong style="color:var(--gold)">${fimStr}</strong></span>
+        </div>
+      </div>`;
+    }).join('');
+
+    const existing = document.getElementById('proj-parceladas');
+    const html = `<div id="proj-parceladas" style="margin-top:16px">
+      <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;font-weight:700">⏱ Parcelas em andamento</div>
+      ${parcelasHTML}
+    </div>`;
+    if (existing) existing.outerHTML = html;
+    else document.getElementById('proj-body').insertAdjacentHTML('afterend', html);
+  } else {
+    const existing = document.getElementById('proj-parceladas');
+    if (existing) existing.remove();
+  }
+
   const pEl=document.getElementById('proj-pat'); if(pEl) pEl.textContent=fmt(acc);
   const ppEl=document.getElementById('proj-poup'); if(ppEl) ppEl.textContent=fmt(totalPoup);
 }
