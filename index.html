@@ -46,88 +46,15 @@
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; -webkit-font-smoothing: antialiased; overflow: hidden; }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ONBOARDING
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-#onboarding {
-  position: fixed; inset: 0; z-index: 1000; background: var(--bg);
-  display: flex; flex-direction: column; overflow: hidden;
-}
-
-.ob-track {
-  flex: 1; display: flex; overflow: hidden; position: relative;
-}
-
-.ob-slide {
-  min-width: 100%; padding: 64px 40px 32px;
-  display: flex; flex-direction: column; justify-content: center;
-  transition: transform 0.45s cubic-bezier(.4,0,.2,1);
-}
-
-@media (max-width: 600px) { .ob-slide { padding: 48px 28px 24px; } }
-
-.ob-glyph {
-  font-size: 72px; margin-bottom: 28px;
-  animation: bob 3s ease-in-out infinite;
-}
-@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-.ob-h {
-  font-family: 'Instrument Serif', serif;
-  font-size: clamp(30px, 5vw, 50px);
-  line-height: 1.1; margin-bottom: 16px; color: var(--text);
-}
-.ob-h em { font-style: italic; color: var(--green); }
-
-.ob-p { font-size: 14px; color: var(--text2); line-height: 1.8; max-width: 480px; }
-
-.ob-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; max-width: 420px; }
-
-.ob-field { display: flex; flex-direction: column; gap: 6px; }
-.ob-field label { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text3); font-weight: 700; }
-.ob-input {
-  background: var(--bg3); border: 1.5px solid var(--border);
-  border-radius: var(--r-sm); padding: 14px 16px;
-  color: var(--text); font-family: 'DM Mono', monospace; font-size: 15px; outline: none;
-  transition: border-color .2s; -webkit-appearance: none;
-}
-.ob-input:focus { border-color: var(--green); }
-.ob-input::placeholder { color: var(--text3); }
-
-.ob-footer {
-  padding: 20px 40px calc(20px + var(--safe));
-  display: flex; flex-direction: column; gap: 10px;
-}
-@media (max-width: 600px) { .ob-footer { padding: 16px 24px calc(16px + var(--safe)); } }
-
-.ob-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 2px; }
-.ob-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); transition: all .3s; }
-.ob-dot.on { width: 22px; border-radius: 3px; background: var(--green); }
-
-.btn-p {
-  width: 100%; padding: 16px; background: var(--green); color: #0d0d14;
-  border: none; border-radius: var(--r); font-family: 'Syne', sans-serif;
-  font-size: 15px; font-weight: 800; cursor: pointer; letter-spacing: .02em;
-  transition: transform .15s, opacity .15s;
-}
-.btn-p:active { transform: scale(.97); opacity: .9; }
-
-.btn-ghost {
-  width: 100%; padding: 12px; background: transparent; border: none;
-  color: var(--text3); font-family: 'DM Mono', monospace; font-size: 12px;
-  cursor: pointer; letter-spacing: .05em;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    APP SHELL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-#app { position: fixed; inset: 0; display: none; }
-#app.on { display: block; }
+#app { position: fixed; inset: 0; display: block; }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    DESKTOP LAYOUT  (≥ 768px)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 @media (min-width: 768px) {
-  #app.on {
+  #app {
     display: grid;
     grid-template-columns: var(--sidebar-w) 1fr;
     grid-template-rows: 1fr;
@@ -210,7 +137,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
    MOBILE LAYOUT  (< 768px)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 @media (max-width: 767px) {
-  #app.on { display: flex; flex-direction: column; }
+  #app { display: flex; flex-direction: column; }
 
   .sidebar { display: none; }
 
@@ -562,49 +489,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 </head>
 <body>
 
-<!-- ━━━━━━━━ ONBOARDING ━━━━━━━━ -->
-<div id="onboarding">
-  <div class="ob-track" id="ob-track">
-    <div class="ob-slide">
-      <div class="ob-glyph">💸</div>
-      <h1 class="ob-h">Seu dinheiro,<br><em>no controle</em></h1>
-      <p class="ob-p">Organize receitas, despesas e metas financeiras. Funciona no celular e no computador, e salva tudo automaticamente.</p>
-    </div>
-    <div class="ob-slide">
-      <div class="ob-glyph">📊</div>
-      <h1 class="ob-h">Veja onde seu<br><em>dinheiro vai</em></h1>
-      <p class="ob-p">Adicione entradas e saídas. O app calcula sua sobra, taxa de poupança e projeta seu patrimônio nos próximos meses.</p>
-    </div>
-    <div class="ob-slide">
-      <div class="ob-glyph">🏆</div>
-      <h1 class="ob-h">Defina metas<br><em>e alcance</em></h1>
-      <p class="ob-p">Crie objetivos — reserva de emergência, viagem, carro. O app calcula em quantos meses você chega lá com base no que você poupa.</p>
-    </div>
-    <div class="ob-slide">
-      <div class="ob-glyph">👋</div>
-      <h1 class="ob-h">Pronto para<br><em>começar?</em></h1>
-      <div class="ob-form">
-        <div class="ob-field">
-          <label>Seu nome (opcional)</label>
-          <input class="ob-input" id="ob-nome" type="text" placeholder="Ex: Victor" autocomplete="given-name">
-        </div>
-        <div class="ob-field">
-          <label>Já tenho guardado (R$)</label>
-          <input class="ob-input" id="ob-guardado" type="number" placeholder="0,00" inputmode="decimal">
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ob-footer">
-    <div class="ob-dots">
-      <div class="ob-dot on" id="d0"></div><div class="ob-dot" id="d1"></div>
-      <div class="ob-dot" id="d2"></div><div class="ob-dot" id="d3"></div>
-    </div>
-    <button class="btn-p" id="ob-btn" onclick="obNext()">Próximo →</button>
-    <button class="btn-ghost" id="ob-skip" onclick="obFinish()">Pular introdução</button>
-  </div>
-</div>
-
 <!-- ━━━━━━━━ APP ━━━━━━━━ -->
 <div id="app">
 
@@ -665,6 +549,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
     <!-- HOME -->
     <div class="page on" id="page-home">
+
+      <!-- Hero balance card -->
       <div class="hero-card">
         <div class="hero-lbl">Sobra mensal</div>
         <div class="hero-val z" id="h-sobra">R$ 0</div>
@@ -675,6 +561,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         </div>
       </div>
 
+      <!-- Quick actions -->
       <div class="qa-grid">
         <button class="qa-btn" onclick="gp('receitas');addItem('receitas')"><span class="qa-ico">💰</span>+ Receita</button>
         <button class="qa-btn" onclick="gp('despesas');addItem('despesas')"><span class="qa-ico">💸</span>+ Despesa</button>
@@ -682,25 +569,49 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         <button class="qa-btn" onclick="gp('exportar')"><span class="qa-ico">📤</span>Exportar</button>
       </div>
 
-      <div class="sec-hd"><span class="sec-lbl g">Resumo recente</span><button class="sec-act" onclick="gp('receitas')">ver tudo →</button></div>
-      <div class="sum-list" id="h-sum"></div>
+      <!-- Receitas inline -->
+      <div class="sec-hd"><span class="sec-lbl g">💰 Receitas</span><button class="sec-act" onclick="addItem('receitas')">+ adicionar</button></div>
+      <div class="items-list" id="lst-receitas"></div>
+      <div class="total-strip">
+        <span class="total-strip-lbl">Total receitas</span>
+        <span class="total-strip-val" id="tot-receitas" style="color:var(--green)">R$ 0,00</span>
+      </div>
 
-      <div class="sec-hd" style="margin-top:24px"><span class="sec-lbl b">Insights</span></div>
+      <!-- Despesas inline -->
+      <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl r">💸 Despesas</span><button class="sec-act" onclick="addItem('despesas')">+ adicionar</button></div>
+      <div class="items-list" id="lst-despesas"></div>
+      <div class="total-strip">
+        <span class="total-strip-lbl">Total despesas</span>
+        <span class="total-strip-val" id="tot-despesas" style="color:var(--red)">R$ 0,00</span>
+      </div>
+
+      <!-- Alocação inline -->
+      <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl y">🎯 Alocação da sobra</span><button class="sec-act" onclick="addAlloc()">+ adicionar</button></div>
+      <div id="alloc-status" class="alloc-status warn" style="display:none"></div>
+      <div id="lst-alocacao"></div>
+
+      <!-- Metas inline -->
+      <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl b">🏆 Metas</span><button class="sec-act" onclick="addGoal()">+ adicionar</button></div>
+      <div id="lst-metas"></div>
+
+      <!-- Insights -->
+      <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl p">✨ Insights</span></div>
       <div id="h-insights"></div>
+
     </div>
 
-    <!-- RECEITAS -->
+    <!-- RECEITAS (página dedicada p/ desktop sidebar) -->
     <div class="page" id="page-receitas">
       <div class="pg-hd">
         <div class="pg-eyebrow">Finanças</div>
         <h2 class="pg-title">Receitas <em>mensais</em></h2>
         <p class="pg-desc">Salário, freelas, benefícios — tudo que entra por mês.</p>
       </div>
-      <div class="items-list" id="lst-receitas"></div>
+      <div class="items-list" id="lst-receitas-pg"></div>
       <button class="add-row-btn" onclick="addItem('receitas')">+ adicionar receita</button>
       <div class="total-strip" style="margin-top:16px">
         <span class="total-strip-lbl">Total receitas</span>
-        <span class="total-strip-val" id="tot-receitas" style="color:var(--green)">R$ 0,00</span>
+        <span class="total-strip-val" id="tot-receitas-pg" style="color:var(--green)">R$ 0,00</span>
       </div>
       <button class="add-fab" onclick="addItem('receitas')">+</button>
     </div>
@@ -712,11 +623,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         <h2 class="pg-title">Despesas <em>mensais</em></h2>
         <p class="pg-desc">Aluguel, faculdade, lazer — tudo que sai por mês.</p>
       </div>
-      <div class="items-list" id="lst-despesas"></div>
+      <div class="items-list" id="lst-despesas-pg"></div>
       <button class="add-row-btn" onclick="addItem('despesas')">+ adicionar despesa</button>
       <div class="total-strip" style="margin-top:16px">
         <span class="total-strip-lbl">Total despesas</span>
-        <span class="total-strip-val" id="tot-despesas" style="color:var(--red)">R$ 0,00</span>
+        <span class="total-strip-val" id="tot-despesas-pg" style="color:var(--red)">R$ 0,00</span>
       </div>
       <button class="add-fab" onclick="addItem('despesas')">+</button>
     </div>
@@ -728,8 +639,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         <h2 class="pg-title">Alocação <em>da sobra</em></h2>
         <p class="pg-desc">Para onde vai cada real que sobra por mês.</p>
       </div>
-      <div id="alloc-status" class="alloc-status warn" style="display:none"></div>
-      <div id="lst-alocacao"></div>
+      <div id="alloc-status-pg" class="alloc-status warn" style="display:none"></div>
+      <div id="lst-alocacao-pg"></div>
       <button class="add-row-btn" onclick="addAlloc()">+ adicionar destino</button>
     </div>
 
@@ -740,7 +651,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         <h2 class="pg-title">Suas <em>metas</em></h2>
         <p class="pg-desc">Defina objetivos e veja em quantos meses você chega lá.</p>
       </div>
-      <div id="lst-metas"></div>
+      <div id="lst-metas-pg"></div>
       <button class="add-row-btn" onclick="addGoal()">+ adicionar meta</button>
       <button class="add-fab" onclick="addGoal()">+</button>
     </div>
@@ -838,34 +749,6 @@ const fmt = v => 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,
 const fmts = v => { const a=Math.abs(v); return a>=1e6?'R$'+(v/1e6).toFixed(1)+'M':a>=1e3?'R$'+(v/1e3).toFixed(1)+'k':fmt(v); };
 const mname = off => { const d=new Date(); d.setMonth(d.getMonth()+off); return d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}); };
 
-// ━━━━━━━━━━━━━━━━━━ ONBOARDING ━━━━━━━━━━━━━━━━━━
-let obIdx = 0;
-const obSlides = document.querySelectorAll('.ob-slide');
-obSlides.forEach((s,i) => s.style.transform = `translateX(${i*100}%)`);
-
-function obDots() {
-  for(let i=0;i<4;i++) document.getElementById(`d${i}`).className = 'ob-dot'+(i===obIdx?' on':'');
-}
-
-function obNext() {
-  if (obIdx < 3) {
-    obIdx++;
-    obSlides.forEach((s,i) => s.style.transform = `translateX(${(i-obIdx)*100}%)`);
-    obDots();
-    document.getElementById('ob-btn').textContent = obIdx===3 ? 'Começar ✓' : 'Próximo →';
-    document.getElementById('ob-skip').style.display = obIdx===3 ? 'none' : 'block';
-  } else { obFinish(); }
-}
-
-function obFinish() {
-  S.userName = document.getElementById('ob-nome').value.trim();
-  S.jaGuardado = parseFloat(document.getElementById('ob-guardado').value)||0;
-  document.getElementById('ja-guardado').value = S.jaGuardado;
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('app').classList.add('on');
-  updateGreeting(); saveLS(); calcular();
-}
-
 // ━━━━━━━━━━━━━━━━━━ NAVIGATION ━━━━━━━━━━━━━━━━━━
 let curPage = 'home';
 function gp(page) {
@@ -961,12 +844,8 @@ function updGoal(id,f,v) { const g=S.metas.find(g=>g.id===id); if(g){ g[f]=['met
 
 // ━━━━━━━━━━━━━━━━━━ RENDER LISTS ━━━━━━━━━━━━━━━━━━
 function renderList(tipo) {
-  const el = document.getElementById(`lst-${tipo}`);
-  if (!S[tipo].length) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">${tipo==='receitas'?'💰':'💸'}</div>Nenhum item ainda.<br>Clique em "+ adicionar" abaixo.</div>`;
-    calcular(); return;
-  }
-  el.innerHTML = S[tipo].map(item=>`
+  const emptyHTML = `<div class="empty"><div class="empty-ico">${tipo==='receitas'?'💰':'💸'}</div>Nenhum item ainda.<br>Clique em "+ adicionar" ao lado.</div>`;
+  const html = S[tipo].length ? S[tipo].map(item=>`
     <div class="item-row">
       <div class="item-bar" style="background:${item.color}"></div>
       <div class="item-info">
@@ -981,18 +860,23 @@ function renderList(tipo) {
         </div>
         <button class="del-btn" onclick="removeItem('${tipo}',${item.id})">×</button>
       </div>
-    </div>`).join('');
+    </div>`).join('') : emptyHTML;
+
+  // Update home inline list
+  const homeEl = document.getElementById(`lst-${tipo}`);
+  if (homeEl) homeEl.innerHTML = html;
+
+  // Update dedicated page list
+  const pgEl = document.getElementById(`lst-${tipo}-pg`);
+  if (pgEl) pgEl.innerHTML = html;
+
   calcular();
 }
 
 function renderAlloc() {
   const sobra = getTotal('receitas')-getTotal('despesas');
-  const el = document.getElementById('lst-alocacao');
-  if (!S.alocacao.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ico">🎯</div>Adicione destinos para sua sobra mensal.</div>';
-    calcular(); return;
-  }
-  el.innerHTML = S.alocacao.map(a=>{
+  const emptyHTML = '<div class="empty"><div class="empty-ico">🎯</div>Adicione destinos para sua sobra mensal.</div>';
+  const html = S.alocacao.length ? S.alocacao.map(a=>{
     const pct = sobra>0 ? Math.min((a.value/sobra)*100,100) : 0;
     return `<div class="alloc-row">
       <div class="alloc-box" style="background:${a.color}"></div>
@@ -1007,17 +891,19 @@ function renderAlloc() {
       </div>
       <button class="del-btn" onclick="removeAlloc(${a.id})">×</button>
     </div>`;
-  }).join('');
+  }).join('') : emptyHTML;
+
+  const homeEl = document.getElementById('lst-alocacao');
+  if (homeEl) homeEl.innerHTML = html;
+  const pgEl = document.getElementById('lst-alocacao-pg');
+  if (pgEl) pgEl.innerHTML = html;
+
   calcular();
 }
 
 function renderMetas() {
-  const el = document.getElementById('lst-metas');
-  if (!S.metas.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ico">🏆</div>Nenhuma meta ainda.<br>Clique em "+ adicionar meta" abaixo.</div>';
-    return;
-  }
-  el.innerHTML = S.metas.map(g=>{
+  const emptyHTML = '<div class="empty"><div class="empty-ico">🏆</div>Nenhuma meta ainda.<br>Clique em "+ adicionar" ao lado.</div>';
+  const html = S.metas.length ? S.metas.map(g=>{
     const pct = g.meta>0 ? Math.min((g.guardado/g.meta)*100,100) : 0;
     const falta = Math.max(g.meta-g.guardado,0);
     const meses = g.mensal>0 ? Math.ceil(falta/g.mensal) : null;
@@ -1039,7 +925,12 @@ function renderMetas() {
         <span class="goal-eta">${eta} · faltam ${fmt(falta)}</span>
       </div>
     </div>`;
-  }).join('');
+  }).join('') : emptyHTML;
+
+  const homeEl = document.getElementById('lst-metas');
+  if (homeEl) homeEl.innerHTML = html;
+  const pgEl = document.getElementById('lst-metas-pg');
+  if (pgEl) pgEl.innerHTML = html;
 }
 
 // ━━━━━━━━━━━━━━━━━━ CALCULATE ━━━━━━━━━━━━━━━━━━
@@ -1049,48 +940,35 @@ function calcular() {
   const R = getTotal('receitas'), D = getTotal('despesas'), sobra = R-D;
   const taxa = R>0 ? (sobra/R*100) : 0;
 
-  // Totals
-  document.getElementById('tot-receitas').textContent = fmt(R);
-  document.getElementById('tot-despesas').textContent = fmt(D);
+  // Update all total elements (home + pages)
+  ['tot-receitas','tot-receitas-pg'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=fmt(R); });
+  ['tot-despesas','tot-despesas-pg'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=fmt(D); });
 
   // Sidebar
-  ['sb-receita','sb-despesa','sb-sobra'].forEach((id,i)=>{
-    const el=document.getElementById(id); if(!el) return;
-    el.textContent = fmts([R,D,sobra][i]);
-  });
-  const taxaEl = document.getElementById('sb-taxa');
-  if (taxaEl) taxaEl.textContent = R>0 ? `${taxa.toFixed(1)}% de poupança` : '—';
+  ['sb-receita','sb-despesa','sb-sobra'].forEach((id,i)=>{ const el=document.getElementById(id); if(el) el.textContent=fmts([R,D,sobra][i]); });
+  const taxaEl=document.getElementById('sb-taxa'); if(taxaEl) taxaEl.textContent=R>0?`${taxa.toFixed(1)}% de poupança`:'—';
 
   // Hero
-  const hSobra = document.getElementById('h-sobra');
-  hSobra.textContent = fmts(sobra);
-  hSobra.className = 'hero-val '+(sobra>0?'g':sobra<0?'r':'z');
-  document.getElementById('h-r').textContent = fmts(R);
-  document.getElementById('h-d').textContent = fmts(D);
-  document.getElementById('h-sub').textContent = R>0 ? `${taxa.toFixed(1)}% de poupança · ${fmt(sobra)} livres por mês` : 'Adicione receitas e despesas para começar';
+  const hSobra=document.getElementById('h-sobra');
+  if(hSobra){ hSobra.textContent=fmts(sobra); hSobra.className='hero-val '+(sobra>0?'g':sobra<0?'r':'z'); }
+  const hR=document.getElementById('h-r'); if(hR) hR.textContent=fmts(R);
+  const hD=document.getElementById('h-d'); if(hD) hD.textContent=fmts(D);
+  const hSub=document.getElementById('h-sub'); if(hSub) hSub.textContent=R>0?`${taxa.toFixed(1)}% de poupança · ${fmt(sobra)} livres por mês`:'Adicione receitas e despesas para começar';
 
-  // Home summary
-  const items = [...S.receitas.map(i=>({...i,t:'r'})), ...S.despesas.map(i=>({...i,t:'d'}))].filter(i=>i.name||i.value).slice(0,6);
-  document.getElementById('h-sum').innerHTML = items.length ? items.map(i=>`
-    <div class="sum-item">
-      <div class="sum-dot" style="background:${i.color}"></div>
-      <span class="sum-name">${i.name||'—'}</span>
-      <span class="sum-val" style="color:${i.t==='r'?'var(--green)':'var(--red)'}">${i.t==='r'?'+':'−'}${fmt(i.value)}</span>
-    </div>`).join('')
-    : '<div class="empty" style="padding:20px;font-size:12px">Seus itens aparecerão aqui.</div>';
-
-  // Alloc status
+  // Alloc status — update both home and page versions
   const totalAlloc = S.alocacao.reduce((s,a)=>s+(a.value||0),0);
   const diff = sobra - totalAlloc;
-  const aEl = document.getElementById('alloc-status');
-  if (aEl && S.alocacao.length>0) {
-    aEl.style.display='flex';
-    if (Math.abs(diff)<0.5) { aEl.className='alloc-status ok'; aEl.textContent='✅ Alocação balanceada — toda a sobra está distribuída'; }
-    else if (diff>0) { aEl.className='alloc-status warn'; aEl.textContent=`⚠ ${fmt(diff)} ainda sem destino definido`; }
-    else { aEl.className='alloc-status err'; aEl.textContent=`🔴 ${fmt(Math.abs(diff))} a mais do que a sobra permite`; }
-  } else if (aEl) { aEl.style.display='none'; }
+  ['alloc-status','alloc-status-pg'].forEach(id => {
+    const aEl=document.getElementById(id); if(!aEl) return;
+    if(S.alocacao.length>0){
+      aEl.style.display='flex';
+      if(Math.abs(diff)<0.5){aEl.className='alloc-status ok';aEl.textContent='✅ Alocação balanceada';}
+      else if(diff>0){aEl.className='alloc-status warn';aEl.textContent=`⚠ ${fmt(diff)} ainda sem destino`;}
+      else{aEl.className='alloc-status err';aEl.textContent=`🔴 ${fmt(Math.abs(diff))} a mais do que a sobra`;}
+    } else { aEl.style.display='none'; }
+  });
 
-  if (S.alocacao.length>0) renderAlloc();
+  if(S.alocacao.length>0) renderAlloc();
 
   // Projection
   renderProj(R,D);
@@ -1299,14 +1177,9 @@ function confirmReset() {
 function renderAll() { renderList('receitas'); renderList('despesas'); renderAlloc(); renderMetas(); calcular(); }
 
 // ━━━━━━━━━━━━━━━━━━ INIT ━━━━━━━━━━━━━━━━━━
-const restored = loadLS();
-if (restored) {
-  document.getElementById('onboarding').style.display='none';
-  document.getElementById('app').classList.add('on');
-  updateGreeting(); renderAll();
-} else {
-  obSlides.forEach((s,i)=>s.style.transform=`translateX(${i*100}%)`);
-}
+loadLS();
+updateGreeting();
+renderAll();
 </script>
 </body>
 </html>
