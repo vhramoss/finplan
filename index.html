@@ -276,13 +276,13 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 .item-row {
   background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px;
   transition: border-color .15s; animation: slideIn .2s ease;
 }
 .item-row:hover { border-color: var(--border2); }
 @keyframes slideIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
 
-.item-bar { width: 4px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.item-bar { width: 4px; min-height: 36px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
 .item-info { flex: 1; min-width: 0; }
 .item-name {
   background: transparent; border: none; outline: none;
@@ -359,10 +359,11 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .parc-inp {
   background: transparent; border: none; outline: none;
   color: var(--gold); font-family: 'DM Mono', monospace;
-  font-size: 12px; font-weight: 800; width: 36px; text-align: center;
+  font-size: 12px; font-weight: 800; width: 28px; text-align: center;
   -webkit-appearance: none;
 }
 .parc-inp::-webkit-inner-spin-button, .parc-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+.item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; padding-top: 2px; }
 .parc-eta {
   font-size: 10px; color: var(--text3);
   background: var(--bg3); border-radius: 5px;
@@ -511,6 +512,394 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 .toast.ok { border-color: rgba(0,230,118,.4); }
 .toast.warn { border-color: rgba(255,215,64,.4); }
 .toast.err { border-color: rgba(255,82,82,.4); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIGHT THEME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+body.theme-light {
+  --bg:       #f7f6f2;
+  --bg2:      #ffffff;
+  --bg3:      #f0eee8;
+  --bg4:      #e6e3da;
+  --border:   #e0dcd0;
+  --border2:  #c8c2b2;
+  --text:     #1a1a2a;
+  --text2:    #5a5a70;
+  --text3:    #9a9aa8;
+  --green:    #00b860;
+  --green-d:  rgba(0,184,96,.10);
+  --red:      #d84545;
+  --red-d:    rgba(216,69,69,.10);
+  --gold:     #c89318;
+  --gold-d:   rgba(200,147,24,.10);
+  --blue:     #2b6fdb;
+  --blue-d:   rgba(43,111,219,.10);
+  --purple:   #9c2ed1;
+  --purple-d: rgba(156,46,209,.10);
+}
+body.theme-light .hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f3ec 100%);
+}
+body.theme-light .hero-card::before {
+  background: radial-gradient(circle, rgba(0,184,96,.08) 0%, transparent 70%);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODAL (confirmação)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px); z-index: 9998;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+  padding: 20px;
+}
+.modal-bg.on { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 24px; max-width: 380px; width: 100%;
+  transform: scale(.95); transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-bg.on .modal-card { transform: scale(1); }
+.modal-ico { font-size: 36px; margin-bottom: 12px; text-align: center; }
+.modal-title {
+  font-family: 'Instrument Serif', serif; font-size: 22px;
+  text-align: center; margin-bottom: 8px; color: var(--text);
+}
+.modal-desc {
+  font-size: 13px; color: var(--text2); text-align: center;
+  line-height: 1.6; margin-bottom: 20px;
+}
+.modal-btns { display: flex; gap: 8px; }
+.modal-btn {
+  flex: 1; padding: 12px; border-radius: var(--r-sm); cursor: pointer;
+  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700;
+  border: 1px solid var(--border); transition: all .15s;
+}
+.modal-btn.cancel { background: var(--bg3); color: var(--text2); }
+.modal-btn.cancel:hover { background: var(--bg4); color: var(--text); }
+.modal-btn.confirm { background: var(--red); color: #fff; border-color: var(--red); }
+.modal-btn.confirm:hover { opacity: .9; }
+.modal-btn.confirm.green { background: var(--green); border-color: var(--green); color: #0d0d14; }
+
+.modal-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color .15s;
+  -webkit-appearance: none;
+}
+.modal-input:focus { border-color: var(--green); }
+.modal-input::placeholder { color: var(--text3); font-weight: 400; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GRÁFICO PIZZA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.chart-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px; margin-bottom: 20px;
+  display: grid; grid-template-columns: 140px 1fr; gap: 20px;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .chart-card { grid-template-columns: 1fr; gap: 12px; }
+  .chart-svg-wrap { margin: 0 auto; }
+}
+.chart-svg-wrap { position: relative; width: 140px; height: 140px; }
+.chart-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.chart-svg circle { fill: none; stroke-width: 18; transition: stroke-dasharray .8s cubic-bezier(.34,1.56,.64,1); }
+.chart-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.chart-center-val {
+  font-family: 'Syne', sans-serif; font-size: 16px;
+  font-weight: 800; color: var(--text);
+}
+.chart-center-lbl {
+  font-size: 8px; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text3); margin-top: 1px;
+}
+.chart-legend { display: flex; flex-direction: column; gap: 8px; }
+.chart-leg-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px;
+}
+.chart-leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.chart-leg-name { flex: 1; color: var(--text2); }
+.chart-leg-val { font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONFIGURAÇÕES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--r);
+  margin-bottom: 8px; gap: 12px;
+}
+.set-info { flex: 1; min-width: 0; }
+.set-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.set-desc { font-size: 11px; color: var(--text3); }
+.set-input {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px;
+  color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 13px; outline: none; width: 140px;
+}
+.set-input:focus { border-color: var(--green); }
+
+/* Toggle switch */
+.toggle {
+  position: relative; width: 44px; height: 24px;
+  background: var(--bg4); border-radius: 99px;
+  cursor: pointer; transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HISTÓRICO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hist-row {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 14px 16px;
+  margin-bottom: 8px; display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr auto;
+  gap: 10px; align-items: center;
+}
+@media (max-width: 600px) {
+  .hist-row { grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; }
+  .hist-row .hist-label { grid-column: 1 / -1; font-size: 13px; }
+}
+.hist-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; }
+.hist-val { font-size: 12px; }
+.hist-val.g { color: var(--green); font-weight: 700; }
+.hist-val.r { color: var(--red); font-weight: 700; }
+.hist-val.y { color: var(--gold); font-weight: 800; }
+.hist-del {
+  background: transparent; border: none; color: var(--text3);
+  font-size: 16px; cursor: pointer; padding: 4px;
+}
+.hist-del:hover { color: var(--red); }
+
+/* Mini sparkline trend */
+.trend-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px; margin-top: 12px;
+}
+.trend-svg { width: 100%; height: 60px; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PARCELA WARNING (na home)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.parcela-alert {
+  background: linear-gradient(135deg, var(--gold-d) 0%, transparent 100%);
+  border: 1px solid rgba(255,215,64,.3);
+  border-radius: var(--r); padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,64,.2); }
+  50% { box-shadow: 0 0 0 6px rgba(255,215,64,0); }
+}
+.parcela-alert-ico { font-size: 22px; flex-shrink: 0; }
+.parcela-alert-text { flex: 1; font-size: 12px; color: var(--gold); line-height: 1.5; }
+.parcela-alert-text strong { color: var(--text); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROFILE SELECTOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.profile-selector {
+  position: relative;
+  margin-bottom: 4px;
+}
+.prof-active {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--bg3); border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s;
+}
+.prof-active:hover { background: var(--bg4); border-color: var(--border2); }
+.prof-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.prof-name {
+  flex: 1; font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.prof-arrow { font-size: 10px; color: var(--text3); }
+
+.prof-menu {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  z-index: 200; display: none;
+  max-height: 320px; overflow-y: auto;
+}
+.prof-menu.open { display: block; animation: fadeUp .15s ease; }
+.prof-menu-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 10px; border-radius: 8px;
+  cursor: pointer; transition: background .15s;
+}
+.prof-menu-item:hover { background: var(--bg3); }
+.prof-menu-item.active { background: var(--bg4); }
+.prof-menu-name {
+  flex: 1; font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.prof-menu-btn {
+  background: transparent; border: none; cursor: pointer;
+  font-size: 11px; padding: 2px 6px; border-radius: 4px;
+  color: var(--text3); transition: all .15s;
+}
+.prof-menu-btn:hover { background: var(--red-d); color: var(--red); }
+.prof-menu-add {
+  padding: 10px; text-align: center;
+  border-top: 1px solid var(--border); margin-top: 4px;
+  cursor: pointer; color: var(--green); font-weight: 700;
+  font-size: 12px; font-family: 'DM Mono', monospace;
+  border-radius: 8px; transition: background .15s;
+}
+.prof-menu-add:hover { background: var(--green-d); }
+
+/* Mobile: seletor de perfil no header */
+.mob-profile-wrap { flex: 1; min-width: 0; }
+.mob-profile-wrap .prof-active {
+  padding: 6px 10px; background: transparent;
+  border-color: transparent;
+}
+.mob-profile-wrap .prof-active:hover { background: var(--bg3); }
+.mob-profile-wrap .prof-name { font-size: 12px; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PATRIMÔNIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.networth-card {
+  background: linear-gradient(135deg, #0f1f2e 0%, #0d0d1a 100%);
+  border: 1px solid var(--border2); border-radius: 20px;
+  padding: 28px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+body.theme-light .networth-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+}
+.networth-card::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(68,138,255,.15) 0%, transparent 70%);
+}
+.nw-lbl { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+.nw-val {
+  font-family: 'Instrument Serif', serif; font-size: clamp(36px, 6vw, 56px);
+  font-weight: 700; line-height: 1; margin-bottom: 6px;
+}
+.nw-val.g { color: var(--green); }
+.nw-val.r { color: var(--red); }
+.nw-val.z { color: var(--text2); }
+.nw-sub { font-size: 12px; color: var(--text2); margin-bottom: 22px; }
+.nw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nw-mini { background: rgba(255,255,255,.04); border-radius: 10px; padding: 12px; }
+body.theme-light .nw-mini { background: rgba(0,0,0,.04); }
+.nw-mini-lbl { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
+.nw-mini-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; }
+
+.asset-row {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px;
+  transition: border-color .15s; animation: slideIn .2s ease; margin-bottom: 8px;
+}
+.asset-row:hover { border-color: var(--border2); }
+.asset-icon {
+  font-size: 22px; width: 40px; height: 40px;
+  background: var(--bg3); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.asset-info { flex: 1; min-width: 0; }
+.asset-name {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 700; width: 100%; margin-bottom: 5px;
+}
+.asset-name::placeholder { color: var(--text3); font-weight: 400; }
+.asset-type-select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); font-family: 'DM Mono', monospace;
+  font-size: 10px; padding: 3px 6px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: .08em; cursor: pointer;
+  outline: none; -webkit-appearance: none;
+}
+.asset-meta {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 6px; flex-wrap: wrap;
+}
+.asset-meta-item {
+  font-size: 10px; color: var(--text3);
+  background: var(--bg3); border-radius: 5px;
+  padding: 3px 8px; white-space: nowrap;
+}
+.asset-meta-item.up { color: var(--green); background: var(--green-d); }
+.asset-meta-item.down { color: var(--red); background: var(--red-d); }
+.asset-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; padding-top: 2px; }
+.asset-val-wrap {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+}
+.asset-val-wrap span { font-size: 10px; color: var(--text3); }
+.asset-val-inp {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 800; width: 110px; text-align: right;
+  -webkit-appearance: none;
+}
+.asset-val-inp::-webkit-inner-spin-button, .asset-val-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.asset-extra-fields {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px; margin-top: 8px;
+}
+@media (max-width: 480px) { .asset-extra-fields { grid-template-columns: 1fr; } }
+.aef { display: flex; flex-direction: column; gap: 3px; }
+.aef-lbl { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); font-weight: 700; }
+.aef-wrap { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; display: flex; align-items: center; gap: 4px; }
+.aef-wrap span { font-size: 9px; color: var(--text3); }
+.aef-inp { background: transparent; border: none; outline: none; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; width: 100%; -webkit-appearance: none; }
+.aef-inp::-webkit-inner-spin-button, .aef-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   KEYBOARD SHORTCUT HINT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.kbd {
+  display: inline-block;
+  padding: 1px 6px; margin-left: 6px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 4px; font-size: 9px;
+  color: var(--text3); font-family: 'DM Mono', monospace;
+  font-weight: 700;
+}
+@media (max-width: 767px) { .kbd { display: none; } }
 </style>
 </head>
 <body>
@@ -525,6 +914,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
       <div class="brand-sub">Plano financeiro inteligente</div>
     </div>
 
+    <!-- Profile selector (desktop) -->
+    <div class="profile-selector" id="profile-sel-desktop"></div>
+
     <nav class="nav-group">
       <div class="nav-lbl">Navegação</div>
       <button class="nav-btn on" id="snav-home" onclick="gp('home')"><span class="nav-icon">🏠</span> Início</button>
@@ -533,6 +925,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
       <button class="nav-btn" id="snav-alocacao" onclick="gp('alocacao')"><span class="nav-icon">🎯</span> Alocação</button>
       <button class="nav-btn" id="snav-metas" onclick="gp('metas')"><span class="nav-icon">🏆</span> Metas</button>
       <button class="nav-btn" id="snav-projecao" onclick="gp('projecao')"><span class="nav-icon">📈</span> Projeção</button>
+      <button class="nav-btn" id="snav-historico" onclick="gp('historico')"><span class="nav-icon">📊</span> Histórico</button>
+      <button class="nav-btn" id="snav-patrimonio" onclick="gp('patrimonio')"><span class="nav-icon">🏦</span> Patrimônio</button>
+      <button class="nav-btn" id="snav-config" onclick="gp('config')"><span class="nav-icon">⚙️</span> Configurações</button>
       <button class="nav-btn" id="snav-exportar" onclick="gp('exportar')"><span class="nav-icon">📤</span> Exportar</button>
     </nav>
 
@@ -566,7 +961,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
   <!-- Mobile header -->
   <header class="mob-header">
     <div class="mob-logo">FinPlan</div>
-    <div class="mob-greet" id="mob-greet">Olá!</div>
+    <div class="mob-profile-wrap profile-selector" id="profile-sel-mobile"></div>
     <div class="mob-save" id="mob-save">💾</div>
   </header>
 
@@ -575,6 +970,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
     <!-- HOME -->
     <div class="page on" id="page-home">
+
+      <!-- Parcela alert (aparece quando uma parcela termina nos próximos 2 meses) -->
+      <div id="parcela-alert" style="display:none"></div>
 
       <!-- Hero balance card -->
       <div class="hero-card">
@@ -587,11 +985,45 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         </div>
       </div>
 
+      <!-- Chart -->
+      <div id="chart-container" style="display:none">
+        <div class="chart-card">
+          <div class="chart-svg-wrap">
+            <svg class="chart-svg" viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r="20" stroke="var(--bg4)"></circle>
+              <circle cx="30" cy="30" r="20" id="chart-despesa" stroke="var(--red)" stroke-dasharray="0 125.6"></circle>
+              <circle cx="30" cy="30" r="20" id="chart-sobra" stroke="var(--green)" stroke-dasharray="0 125.6" stroke-dashoffset="0"></circle>
+            </svg>
+            <div class="chart-center">
+              <div class="chart-center-val" id="chart-pct">0%</div>
+              <div class="chart-center-lbl">Poupança</div>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="chart-leg-item">
+              <div class="chart-leg-dot" style="background:var(--red)"></div>
+              <span class="chart-leg-name">Despesas</span>
+              <span class="chart-leg-val" id="leg-despesa">R$ 0</span>
+            </div>
+            <div class="chart-leg-item">
+              <div class="chart-leg-dot" style="background:var(--green)"></div>
+              <span class="chart-leg-name">Sobra</span>
+              <span class="chart-leg-val" id="leg-sobra">R$ 0</span>
+            </div>
+            <div class="chart-leg-item" style="border-top:1px solid var(--border);padding-top:8px;margin-top:2px">
+              <div class="chart-leg-dot" style="background:var(--bg4)"></div>
+              <span class="chart-leg-name" style="font-weight:700">Total</span>
+              <span class="chart-leg-val" id="leg-total">R$ 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick actions -->
       <div class="qa-grid">
-        <button class="qa-btn" onclick="gp('receitas');addItem('receitas')"><span class="qa-ico">💰</span>+ Receita</button>
-        <button class="qa-btn" onclick="gp('despesas');addItem('despesas')"><span class="qa-ico">💸</span>+ Despesa</button>
-        <button class="qa-btn" onclick="gp('metas');addGoal()"><span class="qa-ico">🏆</span>+ Meta</button>
+        <button class="qa-btn" onclick="gp('receitas');addItem('receitas')"><span class="qa-ico">💰</span>+ Receita<span class="kbd">N</span></button>
+        <button class="qa-btn" onclick="gp('despesas');addItem('despesas')"><span class="qa-ico">💸</span>+ Despesa<span class="kbd">D</span></button>
+        <button class="qa-btn" onclick="gp('metas');addGoal()"><span class="qa-ico">🏆</span>+ Meta<span class="kbd">M</span></button>
         <button class="qa-btn" onclick="gp('exportar')"><span class="qa-ico">📤</span>Exportar</button>
       </div>
 
@@ -710,12 +1142,160 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
         </div>
       </div>
       <div class="proj-table">
-        <div class="proj-head"><span>Mês</span><span>Receita</span><span>Poupança</span><span>Acumulado</span></div>
+        <div class="proj-head"><span>Mês</span><span>Receita</span><span>Despesa</span><span>Acumulado</span></div>
         <div id="proj-body"></div>
       </div>
       <div class="proj-total-row">
         <div class="proj-total-card"><div class="proj-total-lbl">Patrimônio final</div><div class="proj-total-val" id="proj-pat" style="color:var(--green)">R$ 0</div></div>
         <div class="proj-total-card"><div class="proj-total-lbl">Total poupado</div><div class="proj-total-val" id="proj-poup" style="color:var(--blue)">R$ 0</div></div>
+      </div>
+    </div>
+
+    <!-- MAIS (menu mobile) -->
+    <div class="page" id="page-mais">
+      <div class="pg-hd">
+        <div class="pg-eyebrow">Menu</div>
+        <h2 class="pg-title">Mais <em>opções</em></h2>
+        <p class="pg-desc">Acesse outras seções do app.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('alocacao')">
+          <span class="qa-ico">🎯</span>
+          <span style="flex:1;text-align:left">Alocação da sobra</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('projecao')">
+          <span class="qa-ico">📈</span>
+          <span style="flex:1;text-align:left">Projeção patrimonial</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('historico')">
+          <span class="qa-ico">📊</span>
+          <span style="flex:1;text-align:left">Histórico mensal</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('patrimonio')">
+          <span class="qa-ico">🏦</span>
+          <span style="flex:1;text-align:left">Patrimônio líquido</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('config')">
+          <span class="qa-ico">⚙️</span>
+          <span style="flex:1;text-align:left">Configurações</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+        <button class="qa-btn" style="justify-content:flex-start;padding:18px" onclick="gp('exportar')">
+          <span class="qa-ico">📤</span>
+          <span style="flex:1;text-align:left">Exportar / Importar</span>
+          <span style="color:var(--text3);font-size:14px">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="page" id="page-historico">
+      <div class="pg-hd">
+        <div class="pg-eyebrow">Acompanhamento</div>
+        <h2 class="pg-title">Seu <em>histórico</em></h2>
+        <p class="pg-desc">Salve o resumo de cada mês e acompanhe sua evolução ao longo do tempo.</p>
+      </div>
+      <button class="add-row-btn" onclick="fecharMes()" style="margin-top:0;margin-bottom:16px">📸 Fechar mês atual</button>
+      <div id="trend-container" style="display:none">
+        <div class="trend-card">
+          <div style="font-size:11px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-weight:700">Evolução da sobra</div>
+          <svg class="trend-svg" id="trend-svg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+      <div id="hist-list" style="margin-top:12px"></div>
+    </div>
+
+    <!-- PATRIMÔNIO -->
+    <div class="page" id="page-patrimonio">
+      <div class="pg-hd">
+        <div class="pg-eyebrow">Riqueza</div>
+        <h2 class="pg-title">Seu <em>patrimônio</em></h2>
+        <p class="pg-desc">Tudo que você tem (ativos) menos tudo que deve (passivos) = patrimônio líquido.</p>
+      </div>
+
+      <!-- Hero patrimônio líquido -->
+      <div class="networth-card">
+        <div class="nw-lbl">Patrimônio líquido</div>
+        <div class="nw-val z" id="nw-total">R$ 0</div>
+        <div class="nw-sub" id="nw-sub">Adicione seus ativos e dívidas abaixo</div>
+        <div class="nw-row">
+          <div class="nw-mini">
+            <div class="nw-mini-lbl">Ativos</div>
+            <div class="nw-mini-val" id="nw-ativos" style="color:var(--green)">R$ 0</div>
+          </div>
+          <div class="nw-mini">
+            <div class="nw-mini-lbl">Passivos</div>
+            <div class="nw-mini-val" id="nw-passivos" style="color:var(--red)">R$ 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATIVOS -->
+      <div class="sec-hd"><span class="sec-lbl g">💎 Ativos (o que você tem)</span><button class="sec-act" onclick="addAsset()">+ adicionar</button></div>
+      <div id="lst-ativos"></div>
+
+      <!-- PASSIVOS -->
+      <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl r">💳 Passivos (o que você deve)</span><button class="sec-act" onclick="addLiability()">+ adicionar</button></div>
+      <div id="lst-passivos"></div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="page" id="page-config">
+      <div class="pg-hd">
+        <div class="pg-eyebrow">Personalização</div>
+        <h2 class="pg-title">Suas <em>configurações</em></h2>
+        <p class="pg-desc">Personalize a experiência do seu plano financeiro.</p>
+      </div>
+
+      <div class="set-row">
+        <div class="set-info">
+          <div class="set-label">Seu nome</div>
+          <div class="set-desc">Aparece na saudação do app</div>
+        </div>
+        <input class="set-input" type="text" id="set-nome" placeholder="Ex: Victor"
+          oninput="updUserName(this.value)">
+      </div>
+
+      <div class="set-row">
+        <div class="set-info">
+          <div class="set-label">Tema claro</div>
+          <div class="set-desc">Alterna entre tema escuro e claro</div>
+        </div>
+        <div class="toggle" id="theme-toggle" onclick="toggleTheme()"></div>
+      </div>
+
+      <div class="set-row">
+        <div class="set-info">
+          <div class="set-label">Confirmar antes de excluir</div>
+          <div class="set-desc">Pede confirmação ao remover itens</div>
+        </div>
+        <div class="toggle on" id="confirm-toggle" onclick="toggleConfirm()"></div>
+      </div>
+
+      <div class="set-row">
+        <div class="set-info">
+          <div class="set-label">Patrimônio compartilhado</div>
+          <div class="set-desc">Soma ativos e dívidas de todos os perfis em uma só visão</div>
+        </div>
+        <div class="toggle" id="shared-pat-toggle" onclick="toggleSharedPatrimonio()"></div>
+      </div>
+
+      <div class="set-row" style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+        <div class="set-info" style="width:100%">
+          <div class="set-label">Atalhos de teclado (desktop)</div>
+          <div class="set-desc">Para navegar e adicionar itens rapidamente</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:var(--text2);margin-top:4px">
+          <span><span class="kbd" style="display:inline-block">N</span> nova receita</span>
+          <span><span class="kbd" style="display:inline-block">D</span> nova despesa</span>
+          <span><span class="kbd" style="display:inline-block">M</span> nova meta</span>
+          <span><span class="kbd" style="display:inline-block">H</span> ir para início</span>
+          <span><span class="kbd" style="display:inline-block">Esc</span> fechar diálogos</span>
+        </div>
       </div>
     </div>
 
@@ -754,21 +1334,211 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
     <button class="bnav-btn" id="bnav-receitas" onclick="gp('receitas')"><span class="bnav-icon">💰</span><span class="bnav-lbl">Receitas</span></button>
     <button class="bnav-btn" id="bnav-despesas" onclick="gp('despesas')"><span class="bnav-icon">💸</span><span class="bnav-lbl">Despesas</span></button>
     <button class="bnav-btn" id="bnav-metas" onclick="gp('metas')"><span class="bnav-icon">🏆</span><span class="bnav-lbl">Metas</span></button>
-    <button class="bnav-btn" id="bnav-mais" onclick="gp('projecao')"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Mais</span></button>
+    <button class="bnav-btn" id="bnav-mais" onclick="gp('mais')"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Mais</span></button>
   </nav>
 
 </div><!-- /app -->
+
+<!-- Confirmation modal -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-ico" id="modal-ico">⚠️</div>
+    <div class="modal-title" id="modal-title">Tem certeza?</div>
+    <div class="modal-desc" id="modal-desc">Esta ação não pode ser desfeita.</div>
+    <input class="modal-input" id="modal-input" style="display:none" placeholder="Digite aqui...">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-btn confirm" id="modal-confirm" onclick="confirmModal()">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // ━━━━━━━━━━━━━━━━━━ STATE ━━━━━━━━━━━━━━━━━━
-let S = { receitas:[], despesas:[], alocacao:[], metas:[], userName:'', jaGuardado:0 };
+// Estrutura: ROOT contém a lista de perfis e configurações globais.
+// S aponta dinamicamente pro perfil ATIVO (todas as funções continuam usando S.receitas, S.despesas...)
+// userName, settings, jaGuardado e history ficam GLOBAIS (mesmos pra todos os perfis).
+let ROOT = {
+  profiles: [],        // [{id, name, color, receitas, despesas, alocacao, metas, ativos, passivos}]
+  activeProfileId: null,
+  userName: '',
+  jaGuardado: 0,
+  history: [],
+  settings: { theme:'dark', confirmDelete:true, sharedPatrimonio:false }
+};
+let S; // proxy → aponta sempre pro perfil ativo (atualizado via setActiveProfile)
 let idC = 0;
 const nid = () => ++idC;
 const CORES = ['#00e676','#ffd740','#448aff','#ff5252','#d580ff','#ff6d00','#00bcd4','#76ff03','#ff4081','#18ffff'];
 const gc = list => CORES[list.length % CORES.length];
 const LS_KEY = 'finplan_v3';
+
+// Cria um perfil vazio
+function createProfile(name = 'Novo perfil') {
+  return {
+    id: nid(), name, color: gc(ROOT.profiles),
+    receitas: [], despesas: [], alocacao: [], metas: [],
+    ativos: [], passivos: []
+  };
+}
+
+// Define o perfil ativo. S vira referência aos dados desse perfil.
+// userName/settings/history/jaGuardado ficam expostos via S também (compat com código existente).
+function setActiveProfile(id) {
+  const p = ROOT.profiles.find(x => x.id === id);
+  if (!p) return;
+  ROOT.activeProfileId = id;
+
+  // S é um proxy: lê/escreve nos arrays do perfil ativo, mas userName/settings/history são globais
+  S = new Proxy({}, {
+    get(_, key) {
+      // Campos globais
+      if (['userName','jaGuardado','history','settings'].includes(key)) return ROOT[key];
+      // Patrimônio: pode ser compartilhado (lê de TODOS os perfis somados)
+      if ((key === 'ativos' || key === 'passivos') && ROOT.settings.sharedPatrimonio) {
+        return ROOT.profiles.flatMap(prof => prof[key] || []);
+      }
+      // Demais campos: lê do perfil ativo
+      return p[key];
+    },
+    set(_, key, val) {
+      if (['userName','jaGuardado','history','settings'].includes(key)) {
+        ROOT[key] = val;
+      } else {
+        p[key] = val;
+      }
+      return true;
+    }
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━ GERENCIAMENTO DE PERFIS ━━━━━━━━━━━━━━━━━━
+function switchProfile(id) {
+  setActiveProfile(id);
+  saveLS();
+  renderAll();
+  renderHistorico();
+  renderProfileSelector();
+  toast(`📂 ${ROOT.profiles.find(p=>p.id===id).name}`,'ok',1500);
+}
+
+function addProfile() {
+  showInputModal({
+    title: 'Novo perfil',
+    desc: 'Dê um nome para o novo perfil (ex: PJ, Freela, Família).',
+    ico: '✨',
+    placeholder: `Perfil ${ROOT.profiles.length + 1}`,
+    defaultValue: '',
+    confirmText: 'Criar perfil',
+    onConfirm: (name) => {
+      const p = createProfile(name);
+      ROOT.profiles.push(p);
+      setActiveProfile(p.id);
+      saveLS();
+      renderAll();
+      renderHistorico();
+      renderProfileSelector();
+      toast(`✨ Perfil "${p.name}" criado`,'ok');
+    }
+  });
+}
+
+function renameProfile(id) {
+  const p = ROOT.profiles.find(x => x.id === id);
+  if (!p) return;
+  showInputModal({
+    title: 'Renomear perfil',
+    desc: `Digite o novo nome para "${p.name}".`,
+    ico: '✏️',
+    placeholder: 'Nome do perfil',
+    defaultValue: p.name,
+    confirmText: 'Renomear',
+    onConfirm: (novo) => {
+      p.name = novo;
+      saveLS();
+      renderProfileSelector();
+      toast('✏️ Perfil renomeado','ok');
+    }
+  });
+}
+
+function deleteProfile(id) {
+  if (ROOT.profiles.length <= 1) {
+    toast('Você precisa ter pelo menos 1 perfil','warn');
+    return;
+  }
+  const p = ROOT.profiles.find(x => x.id === id);
+  if (!p) return;
+  showModal({
+    title: `Excluir perfil "${p.name}"?`,
+    desc: 'Todos os dados desse perfil (receitas, despesas, metas, ativos, passivos) serão perdidos. Os outros perfis continuam intactos.',
+    ico: '🗑', confirmText: 'Excluir perfil',
+    onConfirm: () => {
+      ROOT.profiles = ROOT.profiles.filter(x => x.id !== id);
+      // Se excluiu o ativo, seleciona o primeiro restante
+      if (ROOT.activeProfileId === id) {
+        setActiveProfile(ROOT.profiles[0].id);
+      }
+      saveLS();
+      renderAll();
+      renderHistorico();
+      renderProfileSelector();
+      toast(`Perfil excluído`,'warn');
+    }
+  });
+}
+
+function renderProfileSelector() {
+  // Seletor desktop (sidebar) e mobile (header)
+  const targets = ['profile-sel-desktop','profile-sel-mobile'];
+  targets.forEach(targetId => {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const active = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+    if (!active) return;
+    el.innerHTML = `
+      <div class="prof-active" onclick="toggleProfileMenu('${targetId}')">
+        <div class="prof-dot" style="background:${active.color}"></div>
+        <span class="prof-name">${active.name}</span>
+        <span class="prof-arrow">▾</span>
+      </div>
+      <div class="prof-menu" id="${targetId}-menu">
+        ${ROOT.profiles.map(p => `
+          <div class="prof-menu-item ${p.id===ROOT.activeProfileId?'active':''}" onclick="switchProfile(${p.id});closeProfileMenus()">
+            <div class="prof-dot" style="background:${p.color}"></div>
+            <span class="prof-menu-name">${p.name}</span>
+            ${ROOT.profiles.length > 1 ? `<button class="prof-menu-btn" onclick="event.stopPropagation();renameProfile(${p.id})" title="Renomear">✏️</button>` : ''}
+            ${ROOT.profiles.length > 1 ? `<button class="prof-menu-btn" onclick="event.stopPropagation();deleteProfile(${p.id});closeProfileMenus()" title="Excluir">×</button>` : ''}
+          </div>
+        `).join('')}
+        <div class="prof-menu-add" onclick="addProfile();closeProfileMenus()">
+          + Novo perfil
+        </div>
+      </div>
+    `;
+  });
+}
+
+function toggleProfileMenu(targetId) {
+  const menu = document.getElementById(`${targetId}-menu`);
+  if (!menu) return;
+  // Fecha outros menus
+  document.querySelectorAll('.prof-menu.open').forEach(m => {
+    if (m.id !== `${targetId}-menu`) m.classList.remove('open');
+  });
+  menu.classList.toggle('open');
+}
+
+function closeProfileMenus() {
+  document.querySelectorAll('.prof-menu.open').forEach(m => m.classList.remove('open'));
+}
+
+// Fecha menus ao clicar fora
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.profile-selector')) closeProfileMenus();
+});
 
 // ━━━━━━━━━━━━━━━━━━ FORMAT ━━━━━━━━━━━━━━━━━━
 const fmt = v => 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -785,7 +1555,7 @@ function gp(page) {
   document.getElementById(`snav-${page}`)?.classList.add('on');
   // mobile bottom nav
   document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('on'));
-  const mobMap = { home:'home', receitas:'receitas', despesas:'despesas', metas:'metas', projecao:'mais', alocacao:'mais', exportar:'mais' };
+  const mobMap = { home:'home', receitas:'receitas', despesas:'despesas', metas:'metas', mais:'mais', projecao:'mais', alocacao:'mais', exportar:'mais', historico:'mais', config:'mais', patrimonio:'mais' };
   document.getElementById(`bnav-${mobMap[page]||'mais'}`)?.classList.add('on');
   document.getElementById('main-content').scrollTo(0, 0);
   curPage = page;
@@ -815,7 +1585,7 @@ function toast(msg, type='ok', dur=2500) {
 // ━━━━━━━━━━━━━━━━━━ LOCALSTORAGE ━━━━━━━━━━━━━━━━━━
 function saveLS() {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify({ S, idC, at: new Date().toISOString() }));
+    localStorage.setItem(LS_KEY, JSON.stringify({ ROOT, idC, at: new Date().toISOString() }));
     const now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const el = document.getElementById('sb-save-txt');
     if (el) { el.textContent = `Salvo às ${now}`; setTimeout(()=>{ el.textContent='Salvo automaticamente'; },3000); }
@@ -827,30 +1597,394 @@ function saveLS() {
 function loadLS() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return false;
+    if (!raw) {
+      // Sem dados — cria perfil padrão
+      const p = createProfile('Pessoal');
+      ROOT.profiles = [p];
+      setActiveProfile(p.id);
+      return false;
+    }
     const data = JSON.parse(raw);
-    if (!data.S) return false;
-    S = data.S; idC = data.idC||0;
-    document.getElementById('ja-guardado').value = S.jaGuardado||0;
+    idC = data.idC || 0;
+
+    // ── MIGRAÇÃO ── Detecta formato antigo (v3 com S) e converte pra v4 (ROOT)
+    if (data.S && !data.ROOT) {
+      const oldS = data.S;
+      // Cria um perfil "Pessoal" com os dados antigos
+      const p = {
+        id: nid(),
+        name: 'Pessoal',
+        color: CORES[0],
+        receitas: oldS.receitas || [],
+        despesas: oldS.despesas || [],
+        alocacao: oldS.alocacao || [],
+        metas: oldS.metas || [],
+        ativos: oldS.ativos || [],
+        passivos: oldS.passivos || []
+      };
+      ROOT = {
+        profiles: [p],
+        activeProfileId: p.id,
+        userName: oldS.userName || '',
+        jaGuardado: oldS.jaGuardado || 0,
+        history: Array.isArray(oldS.history) ? oldS.history : [],
+        settings: oldS.settings || { theme:'dark', confirmDelete:true, sharedPatrimonio:false }
+      };
+    } else if (data.ROOT) {
+      ROOT = data.ROOT;
+    } else {
+      // Dados corrompidos — fallback
+      const p = createProfile('Pessoal');
+      ROOT.profiles = [p];
+    }
+
+    // Garantias de retrocompatibilidade
+    if (!Array.isArray(ROOT.profiles) || !ROOT.profiles.length) {
+      const p = createProfile('Pessoal');
+      ROOT.profiles = [p];
+    }
+    ROOT.profiles.forEach(p => {
+      if (!Array.isArray(p.receitas)) p.receitas = [];
+      if (!Array.isArray(p.despesas)) p.despesas = [];
+      if (!Array.isArray(p.alocacao)) p.alocacao = [];
+      if (!Array.isArray(p.metas)) p.metas = [];
+      if (!Array.isArray(p.ativos)) p.ativos = [];
+      if (!Array.isArray(p.passivos)) p.passivos = [];
+      if (!p.color) p.color = CORES[ROOT.profiles.indexOf(p) % CORES.length];
+    });
+    if (!Array.isArray(ROOT.history)) ROOT.history = [];
+    if (typeof ROOT.userName !== 'string') ROOT.userName = '';
+    if (typeof ROOT.jaGuardado !== 'number') ROOT.jaGuardado = 0;
+    if (!ROOT.settings) ROOT.settings = {};
+    if (typeof ROOT.settings.theme !== 'string') ROOT.settings.theme = 'dark';
+    if (typeof ROOT.settings.confirmDelete !== 'boolean') ROOT.settings.confirmDelete = true;
+    if (typeof ROOT.settings.sharedPatrimonio !== 'boolean') ROOT.settings.sharedPatrimonio = false;
+
+    // Define perfil ativo (validando que existe)
+    const validActive = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+    setActiveProfile(validActive ? validActive.id : ROOT.profiles[0].id);
+
+    const jg = document.getElementById('ja-guardado');
+    if (jg) jg.value = ROOT.jaGuardado || 0;
     return true;
-  } catch(e){ return false; }
+  } catch(e){
+    console.error('Erro carregando localStorage:', e);
+    const p = createProfile('Pessoal');
+    ROOT.profiles = [p];
+    setActiveProfile(p.id);
+    return false;
+  }
 }
+
+// ━━━━━━━━━━━━━━━━━━ MODAL DE CONFIRMAÇÃO ━━━━━━━━━━━━━━━━━━
+let _modalCallback = null;
+function showModal({ title, desc, ico='⚠️', confirmText='Confirmar', confirmClass='confirm', onConfirm }) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-desc').textContent = desc;
+  document.getElementById('modal-ico').textContent = ico;
+  document.getElementById('modal-input').style.display = 'none';
+  const cBtn = document.getElementById('modal-confirm');
+  cBtn.textContent = confirmText;
+  cBtn.className = 'modal-btn ' + confirmClass;
+  _modalCallback = onConfirm;
+  document.getElementById('modal').classList.add('on');
+}
+
+// Modal com campo de input — onConfirm recebe o valor digitado
+function showInputModal({ title, desc, ico='✏️', placeholder='', defaultValue='', confirmText='OK', confirmClass='confirm green', onConfirm }) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-desc').textContent = desc;
+  document.getElementById('modal-ico').textContent = ico;
+  const inp = document.getElementById('modal-input');
+  inp.style.display = 'block';
+  inp.placeholder = placeholder;
+  inp.value = defaultValue;
+  const cBtn = document.getElementById('modal-confirm');
+  cBtn.textContent = confirmText;
+  cBtn.className = 'modal-btn ' + confirmClass;
+  _modalCallback = () => {
+    const value = inp.value.trim();
+    if (value && onConfirm) onConfirm(value);
+  };
+  document.getElementById('modal').classList.add('on');
+  // Focus no input após animação
+  setTimeout(() => { inp.focus(); inp.select(); }, 100);
+  // Enter confirma
+  inp.onkeydown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); confirmModal(); }
+  };
+}
+
+function closeModal(ev) {
+  if (ev && ev.type === 'click' && ev.target.id !== 'modal') return;
+  document.getElementById('modal').classList.remove('on');
+  document.getElementById('modal-input').style.display = 'none';
+  _modalCallback = null;
+}
+function confirmModal() {
+  if (_modalCallback) _modalCallback();
+  closeModal();
+}
+
+// ━━━━━━━━━━━━━━━━━━ TEMA ━━━━━━━━━━━━━━━━━━
+function applyTheme() {
+  if (S.settings.theme === 'light') {
+    document.body.classList.add('theme-light');
+    document.getElementById('theme-toggle')?.classList.add('on');
+  } else {
+    document.body.classList.remove('theme-light');
+    document.getElementById('theme-toggle')?.classList.remove('on');
+  }
+  // Atualiza meta theme-color
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', S.settings.theme === 'light' ? '#f7f6f2' : '#0d0d14');
+}
+function toggleTheme() {
+  S.settings.theme = S.settings.theme === 'light' ? 'dark' : 'light';
+  applyTheme();
+  saveLS();
+}
+function toggleConfirm() {
+  S.settings.confirmDelete = !S.settings.confirmDelete;
+  document.getElementById('confirm-toggle').classList.toggle('on', S.settings.confirmDelete);
+  saveLS();
+}
+function toggleSharedPatrimonio() {
+  ROOT.settings.sharedPatrimonio = !ROOT.settings.sharedPatrimonio;
+  const t = document.getElementById('shared-pat-toggle');
+  if (t) t.classList.toggle('on', ROOT.settings.sharedPatrimonio);
+  saveLS();
+  renderPatrimonio();
+  toast(ROOT.settings.sharedPatrimonio
+    ? '🔗 Patrimônio agora soma todos os perfis'
+    : '🔓 Patrimônio agora é por perfil','ok');
+}
+function updUserName(v) {
+  S.userName = v.trim();
+  updateGreeting();
+  saveLS();
+}
+
+// ━━━━━━━━━━━━━━━━━━ HISTÓRICO ━━━━━━━━━━━━━━━━━━
+function fecharMes() {
+  const R = getTotal('receitas'), D = getTotal('despesas'), sobra = R-D;
+  if (R === 0 && D === 0) { toast('Adicione receitas e despesas primeiro','warn'); return; }
+
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const label = now.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});
+
+  // Se já existe snapshot desse mês, pergunta antes de sobrescrever
+  const existing = S.history.find(h => h.ym === ym);
+  if (existing) {
+    showModal({
+      title: 'Sobrescrever mês?',
+      desc: `Já existe um snapshot de ${label}. Deseja substituir?`,
+      ico: '🔄', confirmText: 'Sobrescrever',
+      onConfirm: () => salvarSnapshot(ym, label, R, D, sobra)
+    });
+    return;
+  }
+  salvarSnapshot(ym, label, R, D, sobra);
+}
+
+function salvarSnapshot(ym, label, R, D, sobra) {
+  const idx = S.history.findIndex(h => h.ym === ym);
+  const snapshot = { ym, label, receitas:R, despesas:D, sobra, savedAt: new Date().toISOString() };
+  if (idx >= 0) S.history[idx] = snapshot;
+  else S.history.push(snapshot);
+  S.history.sort((a,b) => a.ym.localeCompare(b.ym));
+  saveLS();
+  renderHistorico();
+  toast(`📸 ${label} salvo no histórico`,'ok');
+}
+
+function removerHistorico(ym) {
+  showModal({
+    title: 'Remover snapshot?',
+    desc: 'Este registro do histórico será permanentemente removido.',
+    ico: '🗑', confirmText: 'Remover',
+    onConfirm: () => {
+      S.history = S.history.filter(h => h.ym !== ym);
+      saveLS(); renderHistorico();
+      toast('Snapshot removido','warn');
+    }
+  });
+}
+
+function renderHistorico() {
+  const list = document.getElementById('hist-list');
+  const trendC = document.getElementById('trend-container');
+  if (!list) return;
+
+  if (!S.history.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-ico">📊</div>Nenhum snapshot ainda.<br>Clique em "Fechar mês atual" para começar.</div>';
+    if (trendC) trendC.style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = S.history.map(h => `
+    <div class="hist-row">
+      <span class="hist-label">${h.label}</span>
+      <span class="hist-val g">+${fmts(h.receitas)}</span>
+      <span class="hist-val r">−${fmts(h.despesas)}</span>
+      <span class="hist-val ${h.sobra>=0?'y':'r'}">${fmts(h.sobra)}</span>
+      <button class="hist-del" onclick="removerHistorico('${h.ym}')">×</button>
+    </div>
+  `).join('');
+
+  // Trend sparkline
+  if (S.history.length >= 2 && trendC) {
+    trendC.style.display = 'block';
+    const sobras = S.history.map(h => h.sobra);
+    const min = Math.min(...sobras, 0);
+    const max = Math.max(...sobras, 0);
+    const range = max - min || 1;
+    const w = 300, h = 60, pad = 4;
+    const points = sobras.map((s,i) => {
+      const x = (i / (sobras.length - 1)) * (w - pad*2) + pad;
+      const y = h - pad - ((s - min) / range) * (h - pad*2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const path = points.join(' ');
+    const svg = document.getElementById('trend-svg');
+    svg.innerHTML = `
+      <polyline points="${path}" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${points.map(p => { const [x,y] = p.split(','); return `<circle cx="${x}" cy="${y}" r="3" fill="var(--green)"/>`; }).join('')}
+    `;
+  } else if (trendC) {
+    trendC.style.display = 'none';
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━ GRÁFICO PIZZA ━━━━━━━━━━━━━━━━━━
+function renderChart() {
+  const R = getTotal('receitas'), D = getTotal('despesas');
+  const sobra = R - D;
+  const container = document.getElementById('chart-container');
+  if (!container) return;
+  if (R === 0) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+
+  const C = 2 * Math.PI * 20; // circumference
+  const despPct = R > 0 ? Math.min(D/R, 1) : 0;
+  const sobraPct = R > 0 ? Math.max(sobra/R, 0) : 0;
+
+  const despLen = despPct * C;
+  const sobraLen = sobraPct * C;
+
+  const despEl = document.getElementById('chart-despesa');
+  const sobraEl = document.getElementById('chart-sobra');
+  if (despEl) despEl.setAttribute('stroke-dasharray', `${despLen.toFixed(2)} ${C.toFixed(2)}`);
+  if (sobraEl) {
+    sobraEl.setAttribute('stroke-dasharray', `${sobraLen.toFixed(2)} ${C.toFixed(2)}`);
+    sobraEl.setAttribute('stroke-dashoffset', `${(-despLen).toFixed(2)}`);
+  }
+
+  const pctEl = document.getElementById('chart-pct');
+  if (pctEl) pctEl.textContent = ((sobraPct*100).toFixed(0)) + '%';
+  const lDesp = document.getElementById('leg-despesa');
+  const lSob = document.getElementById('leg-sobra');
+  const lTot = document.getElementById('leg-total');
+  if (lDesp) lDesp.textContent = fmts(D);
+  if (lSob) lSob.textContent = fmts(sobra);
+  if (lTot) lTot.textContent = fmts(R);
+}
+
+// ━━━━━━━━━━━━━━━━━━ PARCELA ALERT ━━━━━━━━━━━━━━━━━━
+function renderParcelaAlert() {
+  const el = document.getElementById('parcela-alert');
+  if (!el) return;
+  // Filtra parcelas que terminam nos próximos 2 meses
+  const proximas = S.despesas.filter(d => {
+    if (!d.parcTotal || !d.value) return false;
+    const restantes = Math.max(d.parcTotal - (d.parcPagas||0), 0);
+    return restantes >= 1 && restantes <= 2;
+  });
+  if (!proximas.length) { el.style.display = 'none'; return; }
+
+  const total = proximas.reduce((s,d)=>s+d.value, 0);
+  const nomes = proximas.map(d => d.name || 'despesa').join(', ');
+  const meses = Math.min(...proximas.map(d => Math.max(d.parcTotal - (d.parcPagas||0), 0)));
+  const quando = meses === 1 ? 'no próximo mês' : `em ${meses} meses`;
+
+  el.className = 'parcela-alert';
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <span class="parcela-alert-ico">⏱</span>
+    <span class="parcela-alert-text">
+      <strong>${proximas.length === 1 ? nomes : `${proximas.length} parcelas`}</strong>
+      ${proximas.length === 1 ? 'termina' : 'terminam'} ${quando} —
+      <strong>+${fmts(total)}</strong> de sobra a mais por mês!
+    </span>
+  `;
+}
+
+// ━━━━━━━━━━━━━━━━━━ FORMATAR INPUT ━━━━━━━━━━━━━━━━━━
+function formatInputValor(input) {
+  // Quando o usuário sai do campo, formata o número visualmente
+  // mas o valor real (state) já está salvo. Não muda o input se for vazio.
+  // Como usamos type="number", o browser exibe sem formatação.
+  // Em vez disso, vamos apenas garantir 2 decimais se houver valor.
+  if (!input || !input.value) return;
+  const v = parseFloat(input.value);
+  if (isNaN(v)) return;
+  // Não mexemos no input pois é type="number" — formatação seria conflitante.
+  // Os totais já são formatados via fmt()/fmts().
+}
+
+// ━━━━━━━━━━━━━━━━━━ ATALHOS DE TECLADO ━━━━━━━━━━━━━━━━━━
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Ignora se está digitando em input/textarea/select
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+      // Mas Esc fecha modal mesmo assim
+      if (e.key === 'Escape') closeModal();
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    const key = e.key.toLowerCase();
+    if (key === 'n') { e.preventDefault(); gp('receitas'); addItem('receitas'); }
+    else if (key === 'd') { e.preventDefault(); gp('despesas'); addItem('despesas'); }
+    else if (key === 'm') { e.preventDefault(); gp('metas'); addGoal(); }
+    else if (key === 'h') { e.preventDefault(); gp('home'); }
+    else if (key === 'escape') closeModal();
+  });
+}
+
 
 // ━━━━━━━━━━━━━━━━━━ ADD / UPDATE / REMOVE ━━━━━━━━━━━━━━━━━━
 function addItem(tipo) {
-  S[tipo].push({ id:nid(), name:'', value:0, tag:tipo==='receitas'?'fixo':'variavel', color:gc(S[tipo]), parcTotal:0, parcRestantes:0 });
+  S[tipo].push({ id:nid(), name:'', value:0, tag:tipo==='receitas'?'fixo':'variavel', color:gc(S[tipo]), parcTotal:0, parcPagas:0 });
   renderList(tipo);
   setTimeout(()=>{ const ins=document.querySelectorAll(`#lst-${tipo} .item-name`); if(ins.length) ins[ins.length-1].focus(); },80);
 }
 
-function removeItem(tipo,id) { S[tipo]=S[tipo].filter(i=>i.id!==id); renderList(tipo); calcular(); }
+function removeItem(tipo,id) {
+  if (S.settings && S.settings.confirmDelete) {
+    const item = S[tipo].find(i => i.id === id);
+    const nome = item && item.name ? item.name : (tipo === 'receitas' ? 'esta receita' : 'esta despesa');
+    showModal({
+      title: 'Remover item?',
+      desc: `"${nome}" será removido permanentemente.`,
+      ico: '🗑', confirmText: 'Remover',
+      onConfirm: () => { S[tipo]=S[tipo].filter(i=>i.id!==id); renderList(tipo); calcular(); }
+    });
+    return;
+  }
+  S[tipo]=S[tipo].filter(i=>i.id!==id); renderList(tipo); calcular();
+}
+
 function updItem(tipo,id,f,v) {
   const i=S[tipo].find(i=>i.id===id); if(!i) return;
-  const isNum = ['value','parcTotal','parcRestantes'].includes(f);
-  i[f] = f==='value' ? (parseFloat(v)||0) : isNum ? (parseInt(v)||0) : v;
-  if (f==='value'||f==='parcTotal'||f==='parcRestantes') { renderList(tipo); calcular(); }
-  else saveLS();
+  i[f] = f==='value' ? (parseFloat(v)||0) : ['parcTotal','parcPagas'].includes(f) ? (parseInt(v)||0) : v;
+  calcTotalsOnly();
+  saveLS();
+  if (['parcTotal','parcPagas'].includes(f)) updateParcelaBadge(tipo, id, i);
 }
+
 function cycleTag(tipo,id) {
   const i=S[tipo].find(i=>i.id===id); if(!i) return;
   const tags=tipo==='receitas'?['fixo','variavel','beneficio']:['fixo','variavel'];
@@ -862,12 +1996,63 @@ function addAlloc() {
   renderAlloc();
   setTimeout(()=>{ const ins=document.querySelectorAll('.alloc-name'); if(ins.length) ins[ins.length-1].focus(); },80);
 }
-function removeAlloc(id) { S.alocacao=S.alocacao.filter(a=>a.id!==id); renderAlloc(); calcular(); }
+function removeAlloc(id) {
+  if (S.settings && S.settings.confirmDelete) {
+    const a = S.alocacao.find(x => x.id === id);
+    const nome = a && a.name ? a.name : 'este destino';
+    showModal({
+      title: 'Remover destino?',
+      desc: `"${nome}" será removido da alocação.`,
+      ico: '🗑', confirmText: 'Remover',
+      onConfirm: () => { S.alocacao=S.alocacao.filter(a=>a.id!==id); renderAlloc(); calcular(); }
+    });
+    return;
+  }
+  S.alocacao=S.alocacao.filter(a=>a.id!==id); renderAlloc(); calcular();
+}
 function updAlloc(id,f,v) {
   const a=S.alocacao.find(a=>a.id===id); if(!a) return;
   a[f] = f==='value' ? (parseFloat(v)||0) : v;
-  if (f==='value') calcular();
-  else saveLS();
+  saveLS();
+  if (f==='value') {
+    // Atualiza só essa linha + status + totais — sem reconstruir HTML
+    updateAllocRow(id, a);
+    updateAllocStatus();
+  }
+}
+
+// Atualiza barra de progresso e % de uma linha de alocação específica
+function updateAllocRow(id, a) {
+  const sobra = getTotal('receitas') - getTotal('despesas');
+  const pct = sobra>0 ? Math.min((a.value/sobra)*100,100) : 0;
+  // Procura em todos os containers (home + página dedicada)
+  ['lst-alocacao','lst-alocacao-pg'].forEach(listId => {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    const rows = list.querySelectorAll('.alloc-row');
+    const idx = S.alocacao.findIndex(x => x.id === id);
+    if (idx < 0 || !rows[idx]) return;
+    const fill = rows[idx].querySelector('.alloc-fill');
+    if (fill) fill.style.width = pct + '%';
+    const pctEl = rows[idx].querySelector('.alloc-pct');
+    if (pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+  });
+}
+
+// Atualiza só o status de alocação (sem reconstruir nada)
+function updateAllocStatus() {
+  const sobra = getTotal('receitas') - getTotal('despesas');
+  const totalAlloc = S.alocacao.reduce((s,a)=>s+(a.value||0),0);
+  const diff = sobra - totalAlloc;
+  ['alloc-status','alloc-status-pg'].forEach(id => {
+    const aEl=document.getElementById(id); if(!aEl) return;
+    if(S.alocacao.length>0){
+      aEl.style.display='flex';
+      if(Math.abs(diff)<0.5){aEl.className='alloc-status ok';aEl.textContent='✅ Alocação balanceada';}
+      else if(diff>0){aEl.className='alloc-status warn';aEl.textContent=`⚠ ${fmt(diff)} ainda sem destino`;}
+      else{aEl.className='alloc-status err';aEl.textContent=`🔴 ${fmt(Math.abs(diff))} a mais do que a sobra`;}
+    } else { aEl.style.display='none'; }
+  });
 }
 
 const EMOJIS=['🎯','💰','🌍','🚗','🏠','✈️','📚','💻','🏆','🛡️','🎓','💎'];
@@ -876,38 +2061,121 @@ function addGoal() {
   renderMetas();
   setTimeout(()=>{ const ins=document.querySelectorAll('.goal-name'); if(ins.length) ins[ins.length-1].focus(); },80);
 }
-function removeGoal(id) { S.metas=S.metas.filter(g=>g.id!==id); renderMetas(); }
+function removeGoal(id) {
+  if (S.settings && S.settings.confirmDelete) {
+    const g = S.metas.find(m => m.id === id);
+    const nome = g && g.name ? g.name : 'esta meta';
+    showModal({
+      title: 'Remover meta?',
+      desc: `"${nome}" será removida.`,
+      ico: '🗑', confirmText: 'Remover',
+      onConfirm: () => { S.metas=S.metas.filter(g=>g.id!==id); renderMetas(); }
+    });
+    return;
+  }
+  S.metas=S.metas.filter(g=>g.id!==id); renderMetas();
+}
 function updGoal(id,f,v) {
   const g=S.metas.find(g=>g.id===id); if(!g) return;
   const isNum = ['meta','guardado','mensal'].includes(f);
   g[f] = isNum ? (parseFloat(v)||0) : v;
-  if (isNum) renderMetas(); // só re-renderiza pra campos numéricos (barra de progresso muda)
-  else saveLS(); // pra nome só salva, sem re-renderizar
+  saveLS();
+  // Pra campos numéricos, atualiza só a barra/eta dessa meta — sem reconstruir HTML
+  if (isNum) updateGoalRow(id, g);
+}
+
+// Atualiza barra de progresso, % e ETA de uma meta específica sem reconstruir o HTML
+function updateGoalRow(id, g) {
+  const cards = document.querySelectorAll('.goal-card');
+  const idx = S.metas.findIndex(m => m.id === id);
+  if (idx < 0 || !cards[idx]) return;
+  const card = cards[idx];
+
+  const pct = g.meta>0 ? Math.min((g.guardado/g.meta)*100,100) : 0;
+  const falta = Math.max(g.meta-g.guardado,0);
+  const meses = g.mensal>0 ? Math.ceil(falta/g.mensal) : null;
+  const eta = meses!==null ? (meses===0?'🎉 Meta atingida!':`~${meses} ${meses===1?'mês':'meses'}`) : 'informe o valor mensal';
+
+  const fill = card.querySelector('.goal-prog-fill');
+  if (fill) fill.style.width = pct + '%';
+  const pctEl = card.querySelector('.goal-pct');
+  if (pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+  const etaEl = card.querySelector('.goal-eta');
+  if (etaEl) etaEl.textContent = `${eta} · faltam ${fmt(falta)}`;
 }
 
 // ━━━━━━━━━━━━━━━━━━ RENDER LISTS ━━━━━━━━━━━━━━━━━━
 function parcelasEta(item) {
-  if (!item.parcRestantes || !item.parcTotal) return '';
-  const meses = item.parcRestantes;
-  const d = new Date();
-  d.setMonth(d.getMonth() + meses);
-  const fim = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
-  const progPct = item.parcTotal > 0 ? Math.round(((item.parcTotal - meses) / item.parcTotal) * 100) : 0;
-  const label = meses <= 0 ? '🎉 Quitado!' : `termina ${fim} · ${meses}x restantes`;
-  const cls = meses <= 0 ? 'done' : '';
+  const pagas  = parseInt(item.parcPagas)  || 0;
+  const total  = parseInt(item.parcTotal)  || 0;
+  const restantes = Math.max(total - pagas, 0);
+
+  let etaHTML = '';
+  if (total > 0) {
+    if (pagas >= total) {
+      etaHTML = `<span class="parc-eta done">🎉 Quitado!</span>`;
+    } else {
+      // normaliza pro dia 1 pra não pular meses (ex: 31 jan + 1 = 3 mar)
+      const d = new Date(); d.setDate(1);
+      d.setMonth(d.getMonth() + restantes);
+      const fim = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      const pct = Math.round((pagas / total) * 100);
+      etaHTML = `<span class="parc-eta">termina ${fim} · ${pct}% pago</span>`;
+    }
+  }
+
   return `
     <div class="item-parcelas">
-      <div class="parc-inp-wrap" title="Parcelas restantes">
-        <span>restam</span>
-        <input class="parc-inp" type="number" inputmode="numeric" value="${item.parcRestantes||''}" placeholder="0"
-          oninput="updItem('despesas',${item.id},'parcRestantes',this.value)" min="0">
+      <div class="parc-inp-wrap" title="Qual parcela você está pagando agora?">
+        <span>parcela</span>
+        <input class="parc-inp" type="number" inputmode="numeric"
+          value="${pagas||''}" placeholder="0" min="0"
+          onchange="updItem('despesas',${item.id},'parcPagas',this.value)">
         <span>de</span>
-        <input class="parc-inp" type="number" inputmode="numeric" value="${item.parcTotal||''}" placeholder="0"
-          oninput="updItem('despesas',${item.id},'parcTotal',this.value)" min="0">
+        <input class="parc-inp" type="number" inputmode="numeric"
+          value="${total||''}" placeholder="0" min="0"
+          onchange="updItem('despesas',${item.id},'parcTotal',this.value)">
         <span>x</span>
       </div>
-      <span class="parc-eta ${cls}">${label}</span>
+      ${etaHTML}
     </div>`;
+}
+
+// Atualiza só totais e hero sem re-renderizar listas
+function calcTotalsOnly() {
+  const R = getTotal('receitas'), D = getTotal('despesas'), sobra = R-D;
+  const taxa = R>0 ? (sobra/R*100) : 0;
+  ['tot-receitas','tot-receitas-pg'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=fmt(R); });
+  ['tot-despesas','tot-despesas-pg'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=fmt(D); });
+  ['sb-receita','sb-despesa','sb-sobra'].forEach((id,i)=>{ const el=document.getElementById(id); if(el) el.textContent=fmts([R,D,sobra][i]); });
+  const taxaEl=document.getElementById('sb-taxa'); if(taxaEl) taxaEl.textContent=R>0?`${taxa.toFixed(1)}% de poupança`:'—';
+  const hSobra=document.getElementById('h-sobra');
+  if(hSobra){ hSobra.textContent=fmts(sobra); hSobra.className='hero-val '+(sobra>0?'g':sobra<0?'r':'z'); }
+  const hR=document.getElementById('h-r'); if(hR) hR.textContent=fmts(R);
+  const hD=document.getElementById('h-d'); if(hD) hD.textContent=fmts(D);
+  const hSub=document.getElementById('h-sub'); if(hSub) hSub.textContent=R>0?`${taxa.toFixed(1)}% de poupança · ${fmt(sobra)} livres por mês`:'Adicione receitas e despesas para começar';
+  renderChart();
+  renderParcelaAlert();
+}
+
+// Atualiza só o badge de parcela de um item específico sem re-renderizar tudo
+function updateParcelaBadge(tipo, id, item) {
+  if (tipo !== 'despesas') return;
+  // Encontra todos os item-rows com esse id e atualiza o badge
+  ['lst-despesas','lst-despesas-pg'].forEach(listId => {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    // Encontra o item-row pelo data-id ou pelo índice
+    const rows = list.querySelectorAll('.item-row');
+    const idx = S.despesas.findIndex(d => d.id === id);
+    if (idx >= 0 && rows[idx]) {
+      const existing = rows[idx].querySelector('.item-parcelas');
+      if (existing) {
+        existing.outerHTML = parcelasEta(item);
+      }
+    }
+  });
+  renderProj(getTotal('receitas'), getTotal('despesas'));
 }
 
 function renderList(tipo) {
@@ -938,7 +2206,7 @@ function renderList(tipo) {
   const pgEl = document.getElementById(`lst-${tipo}-pg`);
   if (pgEl) pgEl.innerHTML = html;
 
-  calcular();
+  // Não chama calcular aqui — quem chamou renderList chama calcular depois
 }
 
 function renderAlloc() {
@@ -1002,7 +2270,16 @@ function renderMetas() {
 }
 
 // ━━━━━━━━━━━━━━━━━━ CALCULATE ━━━━━━━━━━━━━━━━━━
-const getTotal = tipo => S[tipo].reduce((s,i)=>s+(i.value||0),0);
+const getTotal = tipo => {
+  if (tipo === 'despesas') {
+    // Exclui despesas quitadas (parcPagas >= parcTotal > 0)
+    return S[tipo].reduce((s,i) => {
+      if (i.parcTotal > 0 && (i.parcPagas||0) >= i.parcTotal) return s;
+      return s + (i.value||0);
+    }, 0);
+  }
+  return S[tipo].reduce((s,i)=>s+(i.value||0),0);
+};
 
 function calcular() {
   const R = getTotal('receitas'), D = getTotal('despesas'), sobra = R-D;
@@ -1044,6 +2321,10 @@ function calcular() {
   // Insights
   renderInsights(R,D,sobra,taxa);
 
+  // Chart e parcela alert
+  renderChart();
+  renderParcelaAlert();
+
   saveLS();
 }
 
@@ -1057,30 +2338,31 @@ function renderProj(R, D) {
   if (!R) { pb.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Configure suas receitas para ver a projeção.</div>'; return; }
 
   // Despesas parceladas com prazo definido
-  const parceladas = S.despesas.filter(d => d.parcRestantes > 0 && d.value > 0);
+  const parceladas = S.despesas.filter(d => d.parcTotal > 0 && d.parcPagas < d.parcTotal && d.value > 0);
 
   pb.innerHTML = Array.from({length:meses},(_,i)=>{
     const rec = R * Math.pow(1+varP,i);
-    // Desconta despesas que já acabaram nesse mês
     const despMes = S.despesas.reduce((sum, d) => {
-      if (d.parcRestantes > 0 && d.parcTotal > 0) {
-        return sum + (i < d.parcRestantes ? d.value : 0);
+      if (d.parcTotal > 0) {
+        const restantes = Math.max(d.parcTotal - (d.parcPagas||0), 0);
+        return sum + (i < restantes ? d.value : 0);
       }
       return sum + (d.value||0);
     }, 0);
     const poup = rec - despMes;
-    acc += poup;
-    totalPoup += poup;
+    acc += poup; totalPoup += poup;
 
-    // Marca meses em que parcelas terminam
-    const terminam = parceladas.filter(d => d.parcRestantes === i+1);
+    const terminam = parceladas.filter(d => {
+      const restantes = Math.max(d.parcTotal - (d.parcPagas||0), 0);
+      return restantes === i + 1;
+    });
     const ganho = terminam.reduce((s,d)=>s+d.value,0);
     const badge = terminam.length ? `<span style="font-size:10px;color:var(--green);margin-left:4px">+${fmt(ganho)} livre</span>` : '';
 
     return `<div class="proj-row" style="${acc<0?'background:var(--red-d)':''}">
       <span class="proj-mo">${mname(i+1)}${badge}</span>
       <span class="proj-v">${fmts(rec)}</span>
-      <span class="proj-s" style="color:${poup>=0?'var(--green)':'var(--red)'}">${poup>=0?'+':''}${fmts(poup)}</span>
+      <span class="proj-v" style="color:${poup>=0?'var(--green)':'var(--red)'}">${poup>=0?'+':''}${fmts(poup)}</span>
       <span class="proj-a" style="color:${acc>=0?'var(--text)':'var(--red)'}">${fmts(acc)}</span>
     </div>`;
   }).join('');
@@ -1088,10 +2370,10 @@ function renderProj(R, D) {
   // Seção de parcelas em andamento
   if (parceladas.length > 0) {
     const parcelasHTML = parceladas.map(d => {
-      const mFim = d.parcRestantes;
-      const fim = new Date(); fim.setMonth(fim.getMonth() + mFim);
+      const restantes = Math.max(d.parcTotal - (d.parcPagas||0), 0);
+      const fim = new Date(); fim.setDate(1); fim.setMonth(fim.getMonth() + restantes);
       const fimStr = fim.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
-      const pct = d.parcTotal > 0 ? Math.round(((d.parcTotal - mFim) / d.parcTotal) * 100) : 0;
+      const pct = d.parcTotal > 0 ? Math.round(((d.parcPagas||0) / d.parcTotal) * 100) : 0;
       return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:13px;font-weight:700;color:var(--text)">${d.name||'Despesa'}</span>
@@ -1101,7 +2383,7 @@ function renderProj(R, D) {
           <div style="height:100%;width:${pct}%;background:var(--gold);border-radius:99px;transition:width .5s"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
-          <span>${mFim}x restantes de ${d.parcTotal}x · ${pct}% pago</span>
+          <span>${restantes}x restantes de ${d.parcTotal}x · ${pct}% pago</span>
           <span>termina <strong style="color:var(--gold)">${fimStr}</strong></span>
         </div>
       </div>`;
@@ -1139,6 +2421,360 @@ function renderInsights(R,D,sobra,taxa) {
   }
   document.getElementById('h-insights').innerHTML = ins.map(i=>`<div class="insight ${i.t}"><span class="insight-ico">${i.i}</span><span>${i.tx}</span></div>`).join('');
 }
+
+// ━━━━━━━━━━━━━━━━━━ PATRIMÔNIO ━━━━━━━━━━━━━━━━━━
+// Tipos de ativo: cada um com ícone e taxa anual de variação sugerida
+const ASSET_TYPES = {
+  imovel:      { ico: '🏠', label: 'Imóvel',         hint: '+6% a.a.' },
+  veiculo:     { ico: '🚗', label: 'Veículo',        hint: '−10% a.a.' },
+  investimento:{ ico: '📈', label: 'Investimento',   hint: '+CDI' },
+  conta:       { ico: '💵', label: 'Conta/Poupança', hint: 'líquido' },
+  reserva:     { ico: '🛡️', label: 'Reserva',        hint: 'emergência' },
+  outro:       { ico: '💎', label: 'Outro',          hint: '' }
+};
+const LIAB_TYPES = {
+  financiamento: { ico: '🏦', label: 'Financiamento' },
+  cartao:        { ico: '💳', label: 'Cartão' },
+  emprestimo:    { ico: '📋', label: 'Empréstimo' },
+  outro:         { ico: '⚠️', label: 'Outro' }
+};
+
+function addAsset() {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  ap.ativos.push({
+    id: nid(), name: '', type: 'conta', value: 0,
+    valuePurchase: 0, purchaseDate: '',
+    color: gc(ap.ativos)
+  });
+  renderPatrimonio();
+  setTimeout(()=>{ const ins=document.querySelectorAll('#lst-ativos .asset-name'); if(ins.length) ins[ins.length-1].focus(); },80);
+}
+
+function removeAsset(id) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  if (ROOT.settings && ROOT.settings.confirmDelete) {
+    const a = ap.ativos.find(x => x.id === id);
+    const nome = a && a.name ? a.name : 'este ativo';
+    showModal({
+      title: 'Remover ativo?',
+      desc: `"${nome}" será removido do patrimônio.`,
+      ico: '🗑', confirmText: 'Remover',
+      onConfirm: () => { ap.ativos = ap.ativos.filter(a=>a.id!==id); renderPatrimonio(); saveLS(); }
+    });
+    return;
+  }
+  ap.ativos = ap.ativos.filter(a=>a.id!==id); renderPatrimonio(); saveLS();
+}
+
+function updAsset(id, f, v) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  const a = ap.ativos.find(a=>a.id===id); if(!a) return;
+  const numFields = ['value','valuePurchase'];
+  a[f] = numFields.includes(f) ? (parseFloat(v)||0) : v;
+  saveLS();
+  if (numFields.includes(f) || f === 'type' || f === 'purchaseDate') {
+    updateNetWorthTotals();
+    updateAssetRowMeta(id, a);
+  }
+}
+
+function addLiability() {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  ap.passivos.push({
+    id: nid(), name: '', type: 'cartao', value: 0,
+    color: gc(ap.passivos)
+  });
+  renderPatrimonio();
+  setTimeout(()=>{ const ins=document.querySelectorAll('#lst-passivos .asset-name'); if(ins.length) ins[ins.length-1].focus(); },80);
+}
+
+function removeLiability(id) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  if (ROOT.settings && ROOT.settings.confirmDelete) {
+    const p = ap.passivos.find(x => x.id === id);
+    const nome = p && p.name ? p.name : 'esta dívida';
+    showModal({
+      title: 'Remover dívida?',
+      desc: `"${nome}" será removida.`,
+      ico: '🗑', confirmText: 'Remover',
+      onConfirm: () => { ap.passivos = ap.passivos.filter(p=>p.id!==id); renderPatrimonio(); saveLS(); }
+    });
+    return;
+  }
+  ap.passivos = ap.passivos.filter(p=>p.id!==id); renderPatrimonio(); saveLS();
+}
+
+function updLiability(id, f, v) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  const p = ap.passivos.find(p=>p.id===id); if(!p) return;
+  p[f] = f === 'value' ? (parseFloat(v)||0) : v;
+  saveLS();
+  if (f === 'value' || f === 'type') updateNetWorthTotals();
+}
+
+function changeAssetType(id, newType) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  const a = ap.ativos.find(a=>a.id===id); if(!a) return;
+  a.type = newType;
+  renderPatrimonio();
+  saveLS();
+}
+
+function changeLiabilityType(id, newType) {
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  const p = ap.passivos.find(p=>p.id===id); if(!p) return;
+  p.type = newType;
+  renderPatrimonio();
+  saveLS();
+}
+
+// Calcula valor estimado atual considerando valorização/depreciação anual
+function getAssetCurrentValue(a) {
+  // Se o usuário preencheu o valor atual, usa ele
+  if (a.value && a.value > 0) return a.value;
+  // Senão tenta estimar via valuePurchase + tempo + taxa
+  if (a.valuePurchase && a.purchaseDate) {
+    const months = monthsBetween(a.purchaseDate, new Date());
+    if (months > 0) {
+      const rates = { imovel: 0.06, veiculo: -0.10, investimento: 0.10, conta: 0, reserva: 0, outro: 0 };
+      const rate = rates[a.type] || 0;
+      return a.valuePurchase * Math.pow(1 + rate, months / 12);
+    }
+    return a.valuePurchase;
+  }
+  return 0;
+}
+
+function monthsBetween(dateStr, dateEnd) {
+  if (!dateStr) return 0;
+  const d1 = new Date(dateStr);
+  if (isNaN(d1)) return 0;
+  return (dateEnd.getFullYear() - d1.getFullYear()) * 12 + (dateEnd.getMonth() - d1.getMonth());
+}
+
+// Atualiza só os totais do hero de patrimônio
+function updateNetWorthTotals() {
+  const isShared = ROOT.settings && ROOT.settings.sharedPatrimonio;
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap && !isShared) return;
+
+  let ativosArr, passivosArr;
+  if (isShared) {
+    ativosArr = ROOT.profiles.flatMap(p => p.ativos || []);
+    passivosArr = ROOT.profiles.flatMap(p => p.passivos || []);
+  } else {
+    ativosArr = ap.ativos || [];
+    passivosArr = ap.passivos || [];
+  }
+
+  const ativosTotal = ativosArr.reduce((s,a) => s + getAssetCurrentValue(a), 0);
+  const passivosTotal = passivosArr.reduce((s,p) => s + (p.value||0), 0);
+  const liquido = ativosTotal - passivosTotal;
+
+  const at = document.getElementById('nw-ativos'); if (at) at.textContent = fmts(ativosTotal);
+  const pt = document.getElementById('nw-passivos'); if (pt) pt.textContent = fmts(passivosTotal);
+  const tot = document.getElementById('nw-total');
+  if (tot) {
+    tot.textContent = fmts(liquido);
+    tot.className = 'nw-val ' + (liquido > 0 ? 'g' : liquido < 0 ? 'r' : 'z');
+  }
+  const sub = document.getElementById('nw-sub');
+  if (sub) {
+    if (ativosTotal === 0 && passivosTotal === 0) {
+      sub.textContent = isShared ? 'Nenhum perfil tem ativos ou dívidas ainda' : 'Adicione seus ativos e dívidas abaixo';
+    } else {
+      const pct = ativosTotal > 0 ? ((liquido/ativosTotal)*100).toFixed(0) : 0;
+      const prefix = isShared ? `🔗 ${ROOT.profiles.length} perfis · ` : '';
+      sub.textContent = `${prefix}${pct}% dos seus ativos são realmente seus`;
+    }
+  }
+}
+
+// Atualiza só o meta-info (variação) de uma linha de ativo
+function updateAssetRowMeta(id, a) {
+  const list = document.getElementById('lst-ativos');
+  if (!list) return;
+  const ap = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+  if (!ap) return;
+  const rows = list.querySelectorAll('.asset-row');
+  const idx = ap.ativos.findIndex(x => x.id === id);
+  if (idx < 0 || !rows[idx]) return;
+  const metaEl = rows[idx].querySelector('.asset-meta');
+  if (metaEl) metaEl.outerHTML = buildAssetMeta(a);
+}
+
+function buildAssetMeta(a) {
+  const parts = [];
+  const typeInfo = ASSET_TYPES[a.type] || ASSET_TYPES.outro;
+  if (typeInfo.hint) parts.push(`<span class="asset-meta-item">${typeInfo.hint}</span>`);
+
+  // Se tem valor de compra e data, mostra variação
+  if (a.valuePurchase > 0 && a.purchaseDate) {
+    const atual = getAssetCurrentValue(a);
+    const diff = atual - a.valuePurchase;
+    const pct = a.valuePurchase > 0 ? (diff/a.valuePurchase*100) : 0;
+    if (Math.abs(pct) > 0.5) {
+      const cls = diff >= 0 ? 'up' : 'down';
+      const sign = diff >= 0 ? '+' : '';
+      parts.push(`<span class="asset-meta-item ${cls}">${sign}${pct.toFixed(0)}% (${sign}${fmt(diff)})</span>`);
+    }
+  }
+  return `<div class="asset-meta">${parts.join('')}</div>`;
+}
+
+function renderPatrimonio() {
+  const isShared = ROOT.settings && ROOT.settings.sharedPatrimonio;
+  const activeProfile = ROOT.profiles.find(p => p.id === ROOT.activeProfileId);
+
+  // ATIVOS
+  const lstA = document.getElementById('lst-ativos');
+  if (lstA) {
+    if (isShared) {
+      // Modo compartilhado: lista agrupada por perfil, sem edição
+      const allAssets = ROOT.profiles.flatMap(p => (p.ativos||[]).map(a => ({...a, _profile: p})));
+      if (!allAssets.length) {
+        lstA.innerHTML = '<div class="empty"><div class="empty-ico">💎</div>Nenhum ativo em nenhum perfil ainda.<br>Desative "Patrimônio compartilhado" nas Configurações para adicionar.</div>';
+      } else {
+        lstA.innerHTML = allAssets.map(a => {
+          const typeInfo = ASSET_TYPES[a.type] || ASSET_TYPES.outro;
+          return `<div class="asset-row" style="opacity:.95">
+            <div class="asset-icon">${typeInfo.ico}</div>
+            <div class="asset-info">
+              <div style="color:var(--text);font-weight:700;font-size:14px;margin-bottom:4px">${a.name||'(sem nome)'}</div>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <span class="asset-meta-item" style="background:${a._profile.color}22;color:${a._profile.color}">📂 ${a._profile.name}</span>
+                <span class="asset-meta-item">${typeInfo.label}</span>
+              </div>
+            </div>
+            <div class="asset-right">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--green)">${fmt(getAssetCurrentValue(a))}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } else {
+      // Modo isolado: usa o perfil ativo (S.ativos), com edição
+      if (!activeProfile.ativos.length) {
+        lstA.innerHTML = '<div class="empty"><div class="empty-ico">💎</div>Nenhum ativo ainda.<br>Adicione imóveis, veículos, investimentos, contas...</div>';
+      } else {
+        lstA.innerHTML = activeProfile.ativos.map(a => {
+          const typeInfo = ASSET_TYPES[a.type] || ASSET_TYPES.outro;
+          const showExtra = ['imovel','veiculo','investimento'].includes(a.type);
+          return `<div class="asset-row">
+            <div class="asset-icon">${typeInfo.ico}</div>
+            <div class="asset-info">
+              <input class="asset-name" placeholder="Nome do ativo..." value="${a.name||''}"
+                oninput="updAsset(${a.id},'name',this.value)">
+              <select class="asset-type-select" onchange="changeAssetType(${a.id}, this.value)">
+                ${Object.entries(ASSET_TYPES).map(([k,v]) =>
+                  `<option value="${k}" ${a.type===k?'selected':''}>${v.label}</option>`
+                ).join('')}
+              </select>
+              ${buildAssetMeta(a)}
+              ${showExtra ? `
+                <div class="asset-extra-fields">
+                  <div class="aef">
+                    <div class="aef-lbl">Comprou por</div>
+                    <div class="aef-wrap"><span>R$</span>
+                      <input class="aef-inp" type="number" inputmode="decimal" value="${a.valuePurchase||''}" placeholder="0"
+                        oninput="updAsset(${a.id},'valuePurchase',this.value)">
+                    </div>
+                  </div>
+                  <div class="aef">
+                    <div class="aef-lbl">Data da compra</div>
+                    <div class="aef-wrap">
+                      <input class="aef-inp" type="month" value="${a.purchaseDate||''}"
+                        oninput="updAsset(${a.id},'purchaseDate',this.value)" style="color:var(--text)">
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+            <div class="asset-right">
+              <div class="asset-val-wrap"><span>R$</span>
+                <input class="asset-val-inp" type="number" inputmode="decimal" value="${a.value||''}" placeholder="valor atual"
+                  oninput="updAsset(${a.id},'value',this.value)">
+              </div>
+              <button class="del-btn" onclick="removeAsset(${a.id})">×</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+  }
+
+  // PASSIVOS
+  const lstP = document.getElementById('lst-passivos');
+  if (lstP) {
+    if (isShared) {
+      const allLiabs = ROOT.profiles.flatMap(p => (p.passivos||[]).map(l => ({...l, _profile: p})));
+      if (!allLiabs.length) {
+        lstP.innerHTML = '<div class="empty"><div class="empty-ico">💳</div>Nenhuma dívida em nenhum perfil.<br>Desative "Patrimônio compartilhado" para adicionar.</div>';
+      } else {
+        lstP.innerHTML = allLiabs.map(p => {
+          const typeInfo = LIAB_TYPES[p.type] || LIAB_TYPES.outro;
+          return `<div class="asset-row" style="opacity:.95">
+            <div class="asset-icon" style="background:var(--red-d);color:var(--red)">${typeInfo.ico}</div>
+            <div class="asset-info">
+              <div style="color:var(--text);font-weight:700;font-size:14px;margin-bottom:4px">${p.name||'(sem nome)'}</div>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <span class="asset-meta-item" style="background:${p._profile.color}22;color:${p._profile.color}">📂 ${p._profile.name}</span>
+                <span class="asset-meta-item">${typeInfo.label}</span>
+              </div>
+            </div>
+            <div class="asset-right">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--red)">${fmt(p.value||0)}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } else {
+      if (!activeProfile.passivos.length) {
+        lstP.innerHTML = '<div class="empty"><div class="empty-ico">💳</div>Nenhuma dívida ainda.<br>Financiamentos, empréstimos, fatura do cartão em aberto...</div>';
+      } else {
+        lstP.innerHTML = activeProfile.passivos.map(p => {
+          const typeInfo = LIAB_TYPES[p.type] || LIAB_TYPES.outro;
+          return `<div class="asset-row">
+            <div class="asset-icon" style="background:var(--red-d);color:var(--red)">${typeInfo.ico}</div>
+            <div class="asset-info">
+              <input class="asset-name" placeholder="Nome da dívida..." value="${p.name||''}"
+                oninput="updLiability(${p.id},'name',this.value)">
+              <select class="asset-type-select" onchange="changeLiabilityType(${p.id}, this.value)">
+                ${Object.entries(LIAB_TYPES).map(([k,v]) =>
+                  `<option value="${k}" ${p.type===k?'selected':''}>${v.label}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="asset-right">
+              <div class="asset-val-wrap" style="border-color:rgba(255,82,82,.3)"><span>R$</span>
+                <input class="asset-val-inp" type="number" inputmode="decimal" value="${p.value||''}" placeholder="0" style="color:var(--red)"
+                  oninput="updLiability(${p.id},'value',this.value)">
+              </div>
+              <button class="del-btn" onclick="removeLiability(${p.id})">×</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+  }
+
+  // Mostra/esconde botões de adicionar conforme modo
+  const addAtivoBtn = document.querySelector('[onclick="addAsset()"]');
+  const addPassivoBtn = document.querySelector('[onclick="addLiability()"]');
+  if (addAtivoBtn) addAtivoBtn.style.display = isShared ? 'none' : '';
+  if (addPassivoBtn) addPassivoBtn.style.display = isShared ? 'none' : '';
+
+  updateNetWorthTotals();
+}
+
 
 // ━━━━━━━━━━━━━━━━━━ EXPORT PDF ━━━━━━━━━━━━━━━━━━
 function exportPDF() {
@@ -1289,19 +2925,48 @@ function importJSON(ev) {
 }
 
 function confirmReset() {
-  if(!confirm('Apagar todos os dados?\nDica: exporte um backup antes!')) return;
-  S={receitas:[],despesas:[],alocacao:[],metas:[],userName:'',jaGuardado:0};
-  idC=0; localStorage.removeItem(LS_KEY);
-  document.getElementById('ja-guardado').value='0';
-  renderAll(); toast('🗑 Dados apagados','warn');
+  showModal({
+    title: 'Apagar todos os dados?',
+    desc: 'Você vai perder TODOS os perfis, receitas, despesas, metas, alocações, patrimônio e histórico. Exporte um backup antes!',
+    ico: '🗑', confirmText: 'Apagar tudo',
+    onConfirm: () => {
+      const p = createProfile('Pessoal');
+      ROOT = {
+        profiles: [p], activeProfileId: p.id,
+        userName: '', jaGuardado: 0, history: [],
+        settings: { theme:'dark', confirmDelete:true, sharedPatrimonio:false }
+      };
+      idC = p.id;
+      setActiveProfile(p.id);
+      localStorage.removeItem(LS_KEY);
+      const jg = document.getElementById('ja-guardado'); if (jg) jg.value='0';
+      const sn = document.getElementById('set-nome'); if (sn) sn.value='';
+      applyTheme();
+      const ct = document.getElementById('confirm-toggle'); if (ct) ct.classList.add('on');
+      const sp = document.getElementById('shared-pat-toggle'); if (sp) sp.classList.remove('on');
+      renderAll(); renderHistorico(); renderProfileSelector();
+      toast('🗑 Dados apagados','warn');
+    }
+  });
 }
 
-function renderAll() { renderList('receitas'); renderList('despesas'); renderAlloc(); renderMetas(); calcular(); }
+function renderAll() { renderList('receitas'); renderList('despesas'); renderAlloc(); renderMetas(); renderPatrimonio(); calcular(); }
 
 // ━━━━━━━━━━━━━━━━━━ INIT ━━━━━━━━━━━━━━━━━━
 loadLS();
+applyTheme();
+// Aplica estado dos toggles e nome
+const _setNome = document.getElementById('set-nome');
+if (_setNome) _setNome.value = ROOT.userName || '';
+const _confT = document.getElementById('confirm-toggle');
+if (_confT) _confT.classList.toggle('on', ROOT.settings.confirmDelete !== false);
+const _sharedT = document.getElementById('shared-pat-toggle');
+if (_sharedT) _sharedT.classList.toggle('on', ROOT.settings.sharedPatrimonio === true);
 updateGreeting();
+renderProfileSelector();
 renderAll();
+renderHistorico();
+setupKeyboardShortcuts();
 </script>
 </body>
 </html>
